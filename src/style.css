@@ -1,0 +1,84 @@
+@import url('https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600&family=Merriweather:ital,wght@0,300;0,400;0,700;1,300;1,400&family=Outfit:wght@400;500;600;700&display=swap');
+@import url('https://fonts.googleapis.com/icon?family=Material+Icons+Outlined');
+
+/* --- Variables CSS Dinámicas --- */
+:root {
+    --primary-rgb: 99 102 241; 
+}
+
+/* --- Temas de Fondo --- */
+/* Modo Claro (Default) */
+body {
+    background-color: #f8fafc;
+    color: #1e293b;
+}
+
+/* Modo Oscuro (Dark) */
+html.dark body {
+    background-color: #0f172a;
+    color: #e2e8f0;
+}
+
+/* Modo Negro (OLED / Black) */
+html.dark.black-mode body {
+    background-color: #000000;
+    color: #e5e5e5;
+}
+
+/* Ajustes para superficies en modo Negro */
+html.dark.black-mode .surface-element {
+    background-color: #121212;
+    border-color: #27272a;
+}
+
+/* --- Estilos Generales --- */
+body { font-family: 'Inter', sans-serif; }
+.font-display { font-family: 'Outfit', sans-serif; }
+.font-serif { font-family: 'Merriweather', serif; }
+
+* { transition: background-color 0.3s ease, color 0.3s ease, border-color 0.3s ease; }
+
+/* --- Scrollbar Personalizado --- */
+.custom-scrollbar::-webkit-scrollbar {
+    width: 4px;
+    height: 4px;
+}
+.custom-scrollbar::-webkit-scrollbar-track {
+    background: transparent;
+}
+.custom-scrollbar::-webkit-scrollbar-thumb {
+    background: #cbd5e1;
+    border-radius: 10px;
+}
+.custom-scrollbar:hover::-webkit-scrollbar-thumb {
+    background: #94a3b8;
+}
+.dark .custom-scrollbar::-webkit-scrollbar-thumb {
+    background: #334155;
+}
+
+/* --- Animaciones --- */
+@keyframes pulse-ring {
+    0% { transform: scale(0.8); opacity: 0.5; }
+    100% { transform: scale(1.2); opacity: 0; }
+}
+.loading-pulse { animation: pulse-ring 1.5s cubic-bezier(0.215, 0.61, 0.355, 1) infinite; }
+
+/* --- Utilidades del Modal --- */
+.theme-option-btn.active {
+    background-color: white;
+    box-shadow: 0 1px 3px rgba(0,0,0,0.1);
+    color: #0f172a;
+}
+html.dark .theme-option-btn.active {
+    background-color: #334155;
+    color: white;
+}
+
+.color-btn {
+    border: 2px solid transparent;
+}
+.color-btn.active {
+    border-color: #94a3b8;
+    transform: scale(1.1);
+}
