@@ -20,7 +20,7 @@
 
   <rect x="0" y="0" width="512" height="512" rx="120" ry="120" fill="url(#vibrantGradient)"></rect>
 
-  <text x="50%" y="55%" dominant-baseline="middle" text-anchor="middle" font-family="'Segoe UI', Roboto, Helvetica, Arial, sans-serif" font-weight="bold" font-size="300" fill="#ffffff" filter="url(#softShadow)">
+  <text x="50%" y="55%" dominant-baseline="middle" text-anchor="middle" font-family="'Segoe UI', Roboto, Helvetica, Arial, sans-serif" font-weight="bold" font-size="250" letter-spacing="-5" fill="#ffffff" filter="url(#softShadow)">
         Md
   </text>
 </svg>
