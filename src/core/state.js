@@ -1,6 +1,6 @@
 import { HistoryManager } from '../editor/history.js';
 
-class AppState {
+export class AppState {
     constructor() {
         this.history = new HistoryManager();
         this.isPreviewMode = false;
