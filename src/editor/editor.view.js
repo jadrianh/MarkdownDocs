@@ -32,7 +32,7 @@ export const EditorView = {
             this.elements.resultsPanel.classList.add('hidden');
             this.elements.previewPanel.classList.remove('hidden');
             this.elements.panelTitle.innerHTML = '<span class="material-symbols-outlined text-primary text-[24px]">visibility</span> VISTA PREVIA';
-            this.elements.toggleViewText.textContent = "VER SUGERENCIAS";
+            this.elements.toggleViewText.textContent = "CORRECTOR";
             this.elements.toggleViewIcon.textContent = "auto_awesome"; 
             this.updatePreview();
         } else {
