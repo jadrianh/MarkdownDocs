@@ -6,28 +6,10 @@ import { ToastView } from '../../ui/toast.view.js';
 
 export function initGrammarController() {
     const analyzeBtn = document.getElementById('analyzeBtn');
+    const langSelect = document.getElementById('langSelect');
     const editor = document.getElementById('editor');
 
-    // Sincronizar UI de idioma inicial con el estado guardado
-    updateLanguageUI(state.currentLanguage);
-
-    // Escuchador de eventos para selección de idioma
-    document.querySelectorAll('.dropdown-lang-item').forEach(item => {
-        item.addEventListener('click', (e) => {
-            e.stopPropagation();
-            const lang = item.dataset.lang;
-            const label = item.dataset.label;
-
-            state.setLanguage(lang);
-            updateLanguageUI(lang, label);
-
-            ToastView.show(`Idioma: ${label}`, "info");
-
-            document.querySelectorAll('.dropdown-menu').forEach(m => m.classList.add('hidden'));
-        });
-    });
-
-    analyzeBtn?.addEventListener('click', async () => {
+    analyzeBtn.addEventListener('click', async () => {
         if (state.isPreviewMode) EditorView.toggleViewMode();
 
         const text = editor.value;
@@ -40,7 +22,7 @@ export function initGrammarController() {
         GrammarView.toggleLoading(true);
 
         try {
-            const data = await LanguageToolAPI.check(text, state.currentLanguage || 'es');
+            const data = await LanguageToolAPI.check(text, langSelect.value);
             state.setMatches(data.matches);
             GrammarView.renderMatches(state.currentMatches, applyFixLocal);
             ToastView.show("Análisis completado", "success");
@@ -48,20 +30,6 @@ export function initGrammarController() {
             console.error(error);
             GrammarView.renderEmptyState();
             ToastView.show("Error de conexión", "error");
-        }
-    });
-}
-
-function updateLanguageUI(lang, label) {
-    const currentLangText = document.getElementById('currentLangText');
-    
-    document.querySelectorAll('.dropdown-lang-item').forEach(item => {
-        const check = item.querySelector('.lang-check');
-        if (item.dataset.lang === lang) {
-            if (check) check.classList.remove('opacity-0');
-            if (currentLangText) currentLangText.textContent = label || item.dataset.label;
-        } else {
-            if (check) check.classList.add('opacity-0');
         }
     });
 }

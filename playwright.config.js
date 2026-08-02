@@ -4,7 +4,7 @@ export default defineConfig({
   testDir: './tests/e2e',
   fullyParallel: false,
   retries: process.env.CI ? 2 : 0,
-  reporter: process.env.CI ? [['github'], ['html', { open: 'never' }]] : 'html',
+  reporter: process.env.CI ? 'github' : 'html',
   use: {
     baseURL: 'http://localhost:5173/MarkdownDocs/',
     trace: 'on-first-retry',
@@ -17,7 +17,7 @@ export default defineConfig({
   ],
   webServer: {
     command: 'npm run dev',
-    url: 'http://localhost:5173/MarkdownDocs/',
+    url: 'http://localhost:5173',
     reuseExistingServer: !process.env.CI,
   },
 });

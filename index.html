@@ -14,47 +14,32 @@
   <meta property="og:description" content="Escribe en Markdown con corrección ortográfica en tiempo real">
   <meta property="og:type" content="website">
 
+  <link
+    href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=Outfit:wght@400;500;600;700&family=Roboto:wght@400;500;700&display=swap"
+    rel="stylesheet">
   <title>Markdown Docs</title>
   <link rel="icon" type="image/svg+xml" href="/favicon.svg">
 
-  <link rel="preconnect" href="https://fonts.googleapis.com">
-  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-  <link href="https://fonts.googleapis.com/css2?family=Hanken+Grotesk:wght@400;500;600;700&family=JetBrains+Mono:wght@400;500;600;700&family=Material+Symbols+Outlined:opsz,wght,FILL,GRAD@20..48,100..700,0..1,-50..200&display=swap" rel="stylesheet" />
-
-  <script src="https://cdn.tailwindcss.com?plugins=forms,typography,container-queries"></script>
+  <script src="https://cdn.tailwindcss.com?plugins=forms,typography"></script>
   <link rel="stylesheet" href="src/style.css">
   <script>
     tailwind.config = {
       darkMode: "class",
       theme: {
         extend: {
-          colors: {
-            "surface-container-low": "#1b1b1e",
-            "surface-container-high": "#2a2a2d",
-            "background": "#131316",
-            "on-background": "#e4e1e6",
-            "surface-container-highest": "#353438",
-            "inverse-surface": "#e4e1e6",
-            "surface-dim": "#131316",
-            "surface-container": "#1f1f22",
-            "outline-variant": "#464554",
-            "surface-variant": "#353438",
-            "surface-container-lowest": "#0e0e11",
-            "inverse-primary": "#494bd6",
-            "surface-tint": "#c0c1ff",
-            "on-surface-variant": "#c7c4d7",
-            "on-surface": "#e4e1e6",
-            primary: "rgb(var(--primary-rgb) / <alpha-value>)",
-            secondary: "#10b981",
-            brand: {
-              DEFAULT: "#4f46e5",
-              hover: "#4338ca",
-            }
-          },
           fontFamily: {
-            sans: ['"Hanken Grotesk"', 'Inter', 'ui-sans-serif', 'system-ui', 'sans-serif'],
-            mono: ['"JetBrains Mono"', 'ui-monospace', 'SFMono-Regular', 'Menlo', 'Monaco', 'Consolas', 'monospace'],
-            display: ['"Hanken Grotesk"', 'Inter', 'sans-serif']
+            sans: ['Inter', 'sans-serif'],
+            display: ['Outfit', 'sans-serif'],
+            serif: ['Roboto', 'sans-serif']
+          },
+          colors: {
+            primary: 'rgb(var(--primary-rgb) / <alpha-value>)',
+            secondary: "#10b981",
+            dark: { bg: "#0f172a", surface: "#1e293b", border: "#334155" }
+          },
+          animation: { 'slide-in': 'slideIn 0.3s ease-out forwards' },
+          keyframes: {
+            slideIn: { '0%': { transform: 'translateY(100%)', opacity: '0' }, '100%': { transform: 'translateY(0)', opacity: '1' } }
           }
         }
       }
@@ -62,475 +47,221 @@
   </script>
 </head>
 
-<body class="bg-zinc-50 dark:bg-zinc-900 text-zinc-900 dark:text-zinc-100 font-sans flex flex-col h-screen antialiased selection:bg-primary selection:text-white overflow-hidden">
+<body class="min-h-screen flex flex-col">
 
-  <!-- Toast Notification Container -->
-  <div id="toast-container" class="fixed bottom-6 right-6 z-[100] flex flex-col gap-2 pointer-events-none font-mono text-xs"></div>
+  <div id="toast-container" class="fixed bottom-6 right-6 z-[100] flex flex-col gap-3 pointer-events-none"></div>
 
-  <!-- Attribution -->
-  <div class="fixed bottom-16 left-3 text-[10px] font-mono text-zinc-400 dark:text-zinc-500 pointer-events-none z-10">
-    Made By: Adrian H.
+  <div class="fixed bottom-6 left-6 z-10 pointer-events-none">
+    <p class="text-sm font-medium text-slate-600 dark:text-slate-600 opacity-40">Made By: Adrian H.</p>
   </div>
 
-  <!-- BEGIN: Top Navigation Bar -->
-  <header class="flex items-center justify-between px-4 py-2 border-b border-zinc-200/60 dark:border-zinc-700/50 bg-white dark:bg-zinc-800 shadow-sm shrink-0 h-14" data-purpose="main-header">
-    <!-- Branding -->
-    <div class="flex items-center gap-3">
-      <div class="w-8 h-8 bg-zinc-800 dark:bg-zinc-700 rounded-lg flex items-center justify-center text-white dark:text-zinc-100 font-bold text-sm">
-        Md
+  <header
+    class="sticky top-0 z-50 bg-white/80 dark:bg-dark-bg/80 backdrop-blur-md border-b border-slate-200 dark:border-dark-border surface-element transition-colors">
+    <div class="max-w-7xl mx-auto px-6 h-16 flex items-center justify-between">
+      <div class="flex items-center gap-3">
+        <img src="/favicon.svg" alt="MarkdownDocs Logo" class="w-10 h-10" draggable="false" />
+        <div>
+          <h1 class="font-display font-bold text-xl tracking-tight leading-none">Markdown Docs</h1>
+          <p class="text-xs text-slate-500 dark:text-slate-400 font-medium">Editor Inteligente</p>
+        </div>
       </div>
-      <div>
-        <h1 class="text-m font-semibold leading-tight text-zinc-900 dark:text-zinc-100">Markdown Docs</h1>
-        <p class="text-xs text-zinc-500 dark:text-zinc-400 font-mono">Editor Inteligente</p>
+
+      <div class="flex items-center gap-3">
+        <meta name="author" content="MarkdownDocs">
+        <button id="toggleViewBtn" aria-label="Cambiar vista"
+          class="flex items-center gap-2 px-4 py-2 rounded-full text-slate-600 dark:text-slate-300 transition-all border border-transparent hover:border-slate-300 dark:hover:border-slate-600 group surface-element"
+          title="Cambiar vista">
+          <span id="toggleViewIcon"
+            class="material-icons-outlined text-[24px] group-hover:text-primary transition-colors">text_snippet</span>
+          <span id="toggleViewText"
+            class="text-xs font-bold uppercase tracking-wide group-hover:text-slate-900 dark:group-hover:text-white transition-colors">Vista
+            Previa</span>
+        </button>
+
+        <div class="h-6 w-px bg-slate-200 dark:bg-slate-700"></div>
+
+        <button id="themeSettingsBtn" aria-label="Preferencias de tema"
+          class="flex items-center justify-center p-2 rounded-full transition-colors text-slate-500 hover:text-primary border border-transparent hover:border-slate-300 dark:hover:border-slate-600"
+          title="Preferencias de tema">
+          <span class="material-icons-outlined text-[24px]">settings</span>
+        </button>
+
+        <button id="analyzeBtn" aria-label="Analizar texto"
+          class="bg-primary text-white px-5 py-2.5 rounded-full text-sm font-semibold hover:shadow-lg hover:shadow-primary/30 transition-all flex items-center gap-2 active:scale-100">
+          <span class="material-icons-outlined text-[24px]">auto_awesome</span>
+          <span>ANALIZAR</span>
+        </button>
       </div>
-    </div>
-    <!-- Actions -->
-    <div class="flex items-center gap-2 text-sm font-medium">
-      <button id="toggleViewBtn" aria-label="Cambiar vista"
-        class="flex items-center justify-center gap-2 px-3.5 py-1.5 text-zinc-600 dark:text-zinc-300 hover:text-zinc-900 dark:hover:text-zinc-100 hover:bg-zinc-100 dark:hover:bg-zinc-700 rounded-sm transition-colors"
-        title="Cambiar vista">
-        <span id="toggleViewIcon" class="material-symbols-outlined text-[20px]">text_snippet</span>
-        <span id="toggleViewText" class="text-xs font-semibold tracking-wide">VISTA PREVIA</span>
-      </button>
-
-      <button id="downloadMdBtn" aria-label="Descargar archivo Markdown (.md)"
-        class="flex items-center justify-center gap-2 px-3.5 py-1.5 text-zinc-600 dark:text-zinc-300 hover:text-zinc-900 dark:hover:text-zinc-100 hover:bg-zinc-100 dark:hover:bg-zinc-700 rounded-sm transition-colors"
-        title="Descargar archivo Markdown (.md)">
-        <span class="material-symbols-outlined text-[20px] text-primary">download</span>
-        <span class="text-xs font-semibold">DESCARGAR</span>
-      </button>
-
-      <div class="w-px h-4 bg-zinc-200 dark:bg-zinc-700 mx-1"></div>
-
-      <button id="themeSettingsBtn" aria-label="Preferencias de tema"
-        class="flex items-center justify-center w-9 h-9 text-zinc-600 dark:text-zinc-300 hover:text-zinc-900 dark:hover:text-zinc-100 hover:bg-zinc-100 dark:hover:bg-zinc-700 rounded-sm transition-colors mr-1"
-        title="Preferencias de tema">
-        <span class="material-symbols-outlined text-[24px]">settings</span>
-      </button>
-
-      <button id="analyzeBtn" aria-label="Analizar texto"
-        class="flex items-center justify-center gap-2 px-4 py-2 bg-primary hover:opacity-90 text-white rounded-sm transition-colors shadow-sm font-mono text-xs uppercase tracking-wider font-semibold active:scale-95">
-        <span class="material-symbols-outlined text-[24px]">auto_awesome</span>
-        <span class="text-[16px]">ANALIZAR</span>
-      </button>
     </div>
   </header>
-  <!-- END: Top Navigation Bar -->
 
-  <!-- BEGIN: Main Workspace -->
-  <main class="flex-1 flex overflow-hidden" data-purpose="main-workspace">
-    <!-- BEGIN: Editor Column -->
-    <section class="flex-1 flex flex-col min-w-0 border-r border-zinc-200/60 dark:border-zinc-700/50 bg-white dark:bg-zinc-900" data-purpose="editor-section">
-      <!-- Toolbar -->
-      <div class="flex items-center justify-between px-3 py-2 border-b border-zinc-200/60 dark:border-zinc-700/50 text-zinc-600 dark:text-zinc-300 bg-zinc-50/50 dark:bg-zinc-800/50 shrink-0 h-11">
-        <!-- Formatting Tools -->
-        <div class="flex items-center gap-1 flex-wrap text-xs">
-          <!-- 1. Estilos de texto (Dropdown Button) -->
-          <div class="relative dropdown-container">
-            <button id="btnTextStyles" aria-label="Estilos de texto"
-              class="dropdown-trigger flex items-center justify-center gap-0.5 px-1.5 h-8 hover:bg-zinc-200/60 dark:hover:bg-zinc-700 rounded-sm transition-colors text-zinc-700 dark:text-zinc-300"
-              title="Estilos de texto">
-              <span class="material-symbols-outlined text-[24px]">title</span>
-              <span class="material-symbols-outlined text-[16px] text-zinc-400">arrow_drop_down</span>
-            </button>
-            <div id="menuTextStyles"
-              class="dropdown-menu hidden absolute top-full left-0 mt-1 z-50 w-52 bg-white dark:bg-zinc-800 border border-zinc-200/80 dark:border-zinc-700/80 rounded shadow-xl py-1 font-mono text-xs text-zinc-700 dark:text-zinc-200">
-              <button class="dropdown-item w-full flex items-center justify-between px-3 py-1.5 hover:bg-zinc-100 dark:hover:bg-zinc-700/60 transition-colors text-left" data-action="header" data-value="0">
-                <span class="flex items-center gap-2">
-                  <span class="material-symbols-outlined text-[18px]">short_text</span>
-                  Texto normal
-                </span>
-                <span class="text-[10px] text-zinc-400 dark:text-zinc-500 font-mono">Ctrl+Alt+0</span>
-              </button>
-              <button class="dropdown-item w-full flex items-center justify-between px-3 py-1.5 hover:bg-zinc-100 dark:hover:bg-zinc-700/60 transition-colors text-left" data-action="header" data-value="1">
-                <span class="flex items-center gap-2 font-bold">
-                  <span class="material-symbols-outlined text-[18px]">title</span>
-                  Título 1
-                </span>
-                <span class="text-[10px] text-zinc-400 dark:text-zinc-500 font-mono">Ctrl+Alt+1</span>
-              </button>
-              <button class="dropdown-item w-full flex items-center justify-between px-3 py-1.5 hover:bg-zinc-100 dark:hover:bg-zinc-700/60 transition-colors text-left" data-action="header" data-value="2">
-                <span class="flex items-center gap-2 font-bold">
-                  <span class="material-symbols-outlined text-[18px]">title</span>
-                  Título 2
-                </span>
-                <span class="text-[10px] text-zinc-400 dark:text-zinc-500 font-mono">Ctrl+Alt+2</span>
-              </button>
-              <button class="dropdown-item w-full flex items-center justify-between px-3 py-1.5 hover:bg-zinc-100 dark:hover:bg-zinc-700/60 transition-colors text-left" data-action="header" data-value="3">
-                <span class="flex items-center gap-2 font-bold">
-                  <span class="material-symbols-outlined text-[18px]">title</span>
-                  Título 3
-                </span>
-                <span class="text-[10px] text-zinc-400 dark:text-zinc-500 font-mono">Ctrl+Alt+3</span>
-              </button>
-            </div>
+  <main class="flex-grow pt-8 pb-10 px-4 sm:px-6">
+    <div id="analyzingIndicator" class="hidden flex items-center gap-2 text-primary">
+      <span class="material-icons-outlined animate-spin">sync</span>
+      <span class="text-xs font-medium">Analizando...</span>
+    </div>
+    <div class="max-w-7xl mx-auto grid grid-cols-1 lg:grid-cols-3 gap-6 h-[calc(100vh-140px)] min-h-[600px]">
+
+      <div
+        class="lg:col-span-2 bg-white dark:bg-dark-surface surface-element rounded-2xl shadow-xl shadow-slate-200/50 dark:shadow-none border border-slate-100 dark:border-dark-border flex flex-col overflow-hidden transition-all duration-300 focus-within:ring-2 focus-within:ring-primary/50 focus-within:border-primary">
+
+        <div
+          class="px-4 py-2 border-b border-slate-100 dark:border-dark-border flex items-center justify-between bg-slate-50/80 dark:bg-dark-surface surface-element backdrop-blur-sm sticky top-0 z-10">
+          <div class="flex items-center gap-1">
+            <button id="btnBold" aria-label="Negrita"
+              class="p-1.5 text-slate-500 hover:text-primary hover:bg-slate-200 dark:hover:bg-slate-700 rounded transition-colors"
+              title="Negrita"><span class="material-icons-outlined text-[24px]">format_bold</span></button>
+            <button id="btnItalic" aria-label="Cursiva"
+              class="p-1.5 text-slate-500 hover:text-primary hover:bg-slate-200 dark:hover:bg-slate-700 rounded transition-colors"
+              title="Cursiva"><span class="material-icons-outlined text-[24px]">format_italic</span></button>
+            <div class="w-px h-4 bg-slate-300 dark:bg-slate-600 mx-1"></div>
+            <button id="btnHeader" aria-label="Título"
+              class="p-1.5 text-slate-500 hover:text-primary hover:bg-slate-200 dark:hover:bg-slate-700 rounded transition-colors"
+              title="Título"><span class="material-icons-outlined text-[18px]">title</span></button>
+            <button id="btnListUl" aria-label="Lista de viñetas"
+              class="p-1.5 text-slate-500 hover:text-primary hover:bg-slate-200 dark:hover:bg-slate-700 rounded transition-colors"
+              title="Lista viñetas"><span
+                class="material-icons-outlined text-[24px]">format_list_bulleted</span></button>
+            <button id="btnListOl" aria-label="Lista numérica"
+              class="p-1.5 text-slate-500 hover:text-primary hover:bg-slate-200 dark:hover:bg-slate-700 rounded transition-colors"
+              title="Lista numérica"><span
+                class="material-icons-outlined text-[24px]">format_list_numbered</span></button>
           </div>
 
-          <!-- 2. Negrita (Ctrl+B) -->
-          <button id="btnBold" aria-label="Negrita (Ctrl+B)"
-            class="flex items-center justify-center w-8 h-8 hover:bg-zinc-200/60 dark:hover:bg-zinc-700 rounded-sm transition-colors text-zinc-700 dark:text-zinc-300"
-            title="Negrita (Ctrl+B)">
-            <span class="material-symbols-outlined text-[24px] font-bold">format_bold</span>
-          </button>
-
-          <!-- 3. Cursiva (Ctrl+I) -->
-          <button id="btnItalic" aria-label="Cursiva (Ctrl+I)"
-            class="flex items-center justify-center w-8 h-8 hover:bg-zinc-200/60 dark:hover:bg-zinc-700 rounded-sm transition-colors text-zinc-700 dark:text-zinc-300"
-            title="Cursiva (Ctrl+I)">
-            <span class="material-symbols-outlined text-[24px] italic">format_italic</span>
-          </button>
-
-          <div class="w-px h-4 bg-zinc-200 dark:bg-zinc-700 mx-0.5"></div>
-
-          <!-- 4. Más formatos (Dropdown Button) -->
-          <div class="relative dropdown-container">
-            <button id="btnMoreFormats" aria-label="Más formatos"
-              class="dropdown-trigger flex items-center justify-center gap-0.5 px-1.5 h-8 hover:bg-zinc-200/60 dark:hover:bg-zinc-700 rounded-sm transition-colors text-zinc-700 dark:text-zinc-300"
-              title="Más formatos">
-              <span class="material-symbols-outlined text-[24px]">more_horiz</span>
-              <span class="material-symbols-outlined text-[16px] text-zinc-400">arrow_drop_down</span>
-            </button>
-            <div id="menuMoreFormats"
-              class="dropdown-menu hidden absolute top-full left-0 mt-1 z-50 w-56 bg-white dark:bg-zinc-800 border border-zinc-200/80 dark:border-zinc-700/80 rounded shadow-xl py-1 font-mono text-xs text-zinc-700 dark:text-zinc-200">
-              <button class="dropdown-item w-full flex items-center justify-between px-3 py-1.5 hover:bg-zinc-100 dark:hover:bg-zinc-700/60 transition-colors text-left" data-action="moreFormat" data-value="strikethrough">
-                <span class="flex items-center gap-2">
-                  <span class="material-symbols-outlined text-[18px]">strikethrough_s</span>
-                  Tachado
-                </span>
-                <span class="text-[10px] text-zinc-400 dark:text-zinc-500 font-mono">Ctrl+Shift+S</span>
-              </button>
-              <button class="dropdown-item w-full flex items-center justify-between px-3 py-1.5 hover:bg-zinc-100 dark:hover:bg-zinc-700/60 transition-colors text-left" data-action="moreFormat" data-value="code">
-                <span class="flex items-center gap-2">
-                  <span class="material-symbols-outlined text-[18px]">code</span>
-                  Código
-                </span>
-                <span class="text-[10px] text-zinc-400 dark:text-zinc-500 font-mono">Ctrl+Shift+M</span>
-              </button>
-              <div class="my-1 border-t border-zinc-200/60 dark:border-zinc-700/60"></div>
-              <button class="dropdown-item w-full flex items-center justify-between px-3 py-1.5 hover:bg-zinc-100 dark:hover:bg-zinc-700/60 transition-colors text-left text-red-500/80 dark:text-red-400" data-action="moreFormat" data-value="clear">
-                <span class="flex items-center gap-2">
-                  <span class="material-symbols-outlined text-[18px]">format_clear</span>
-                  Borrar Formato
-                </span>
-                <span class="text-[10px] text-zinc-400 dark:text-zinc-500 font-mono">Ctrl+\</span>
-              </button>
-            </div>
-          </div>
-
-          <div class="w-px h-4 bg-zinc-200 dark:bg-zinc-700 mx-0.5"></div>
-
-          <!-- 5. Listas (Dropdown Button) -->
-          <div class="relative dropdown-container">
-            <button id="btnListStyle" aria-label="Listas"
-              class="dropdown-trigger flex items-center justify-center gap-0.5 px-1.5 h-8 hover:bg-zinc-200/60 dark:hover:bg-zinc-700 rounded-sm transition-colors text-zinc-700 dark:text-zinc-300"
-              title="Listas">
-              <span class="material-symbols-outlined text-[24px]">format_list_bulleted</span>
-              <span class="material-symbols-outlined text-[16px] text-zinc-400">arrow_drop_down</span>
-            </button>
-            <div id="menuListStyle"
-              class="dropdown-menu hidden absolute top-full left-0 mt-1 z-50 w-56 bg-white dark:bg-zinc-800 border border-zinc-200/80 dark:border-zinc-700/80 rounded shadow-xl py-1 font-mono text-xs text-zinc-700 dark:text-zinc-200">
-              <button class="dropdown-item w-full flex items-center justify-between px-3 py-1.5 hover:bg-zinc-100 dark:hover:bg-zinc-700/60 transition-colors text-left" data-action="listStyle" data-value="unordered">
-                <span class="flex items-center gap-2">
-                  <span class="material-symbols-outlined text-[18px]">format_list_bulleted</span>
-                  Lista de viñetas
-                </span>
-                <span class="text-[10px] text-zinc-400 dark:text-zinc-500 font-mono">Ctrl+Shift+L</span>
-              </button>
-              <button class="dropdown-item w-full flex items-center justify-between px-3 py-1.5 hover:bg-zinc-100 dark:hover:bg-zinc-700/60 transition-colors text-left" data-action="listStyle" data-value="ordered">
-                <span class="flex items-center gap-2">
-                  <span class="material-symbols-outlined text-[18px]">format_list_numbered</span>
-                  Lista numérica
-                </span>
-                <span class="text-[10px] text-zinc-400 dark:text-zinc-500 font-mono">Ctrl+Shift+N</span>
-              </button>
-            </div>
-          </div>
-
-          <div class="w-px h-4 bg-zinc-200 dark:bg-zinc-700 mx-0.5"></div>
-
-          <!-- 6. Insertar Elementos (Dropdown Button) -->
-          <div class="relative dropdown-container">
-            <button id="btnInsertElement" aria-label="Insertar Elementos"
-              class="dropdown-trigger flex items-center justify-center gap-0.5 px-1.5 h-8 hover:bg-zinc-200/60 dark:hover:bg-zinc-700 rounded-sm transition-colors text-zinc-700 dark:text-zinc-300"
-              title="Insertar Elementos">
-              <span class="material-symbols-outlined text-[24px]">add_box</span>
-              <span class="material-symbols-outlined text-[16px] text-zinc-400">arrow_drop_down</span>
-            </button>
-            <div id="menuInsertElement"
-              class="dropdown-menu hidden absolute top-full left-0 mt-1 z-50 w-60 bg-white dark:bg-zinc-800 border border-zinc-200/80 dark:border-zinc-700/80 rounded shadow-xl py-1 font-mono text-xs text-zinc-700 dark:text-zinc-200">
-              <button class="dropdown-item w-full flex items-center justify-between px-3 py-1.5 hover:bg-zinc-100 dark:hover:bg-zinc-700/60 transition-colors text-left" data-action="insertElement" data-value="link">
-                <span class="flex items-center gap-2">
-                  <span class="material-symbols-outlined text-[18px]">link</span>
-                  Vínculo
-                </span>
-                <span class="text-[10px] text-zinc-400 dark:text-zinc-500 font-mono">Ctrl+Alt+4</span>
-              </button>
-              <button class="dropdown-item w-full flex items-center justify-between px-3 py-1.5 hover:bg-zinc-100 dark:hover:bg-zinc-700/60 transition-colors text-left" data-action="insertElement" data-value="codeblock">
-                <span class="flex items-center gap-2">
-                  <span class="material-symbols-outlined text-[18px]">code_blocks</span>
-                  Fragmento de código
-                </span>
-                <span class="text-[10px] text-zinc-400 dark:text-zinc-500 font-mono">Ctrl+Alt+5</span>
-              </button>
-              <button class="dropdown-item w-full flex items-center justify-between px-3 py-1.5 hover:bg-zinc-100 dark:hover:bg-zinc-700/60 transition-colors text-left" data-action="insertElement" data-value="quote">
-                <span class="flex items-center gap-2">
-                  <span class="material-symbols-outlined text-[18px]">format_quote</span>
-                  Citar
-                </span>
-                <span class="text-[10px] text-zinc-400 dark:text-zinc-500 font-mono">Ctrl+Alt+6</span>
-              </button>
-            </div>
-          </div>
-        </div>
-
-        <!-- Utility Tools -->
-        <div class="flex items-center gap-2 text-xs font-mono">
-          <!-- Language Selector Dropdown -->
-          <div class="relative dropdown-container flex items-center pr-2 border-r border-zinc-200 dark:border-zinc-700">
-            <button id="btnLanguage" aria-label="Seleccionar idioma de corrección"
-              class="dropdown-trigger flex items-center justify-center gap-1.5 px-2 h-8 hover:bg-zinc-200/60 dark:hover:bg-zinc-700 rounded-sm transition-colors text-zinc-600 dark:text-zinc-300 font-mono text-xs"
-              title="Idioma de corrección">
-              <span class="material-symbols-outlined text-[20px]">translate</span>
-              <span id="currentLangText" class="font-medium uppercase text-xs tracking-wide">ESPAÑOL</span>
-              <span class="material-symbols-outlined text-[16px] text-zinc-400">arrow_drop_down</span>
-            </button>
-            <div id="menuLanguage"
-              class="dropdown-menu hidden absolute top-full right-0 mt-1 z-50 w-56 max-h-64 overflow-y-auto custom-scrollbar bg-white dark:bg-zinc-800 border border-zinc-200/80 dark:border-zinc-700/80 rounded shadow-xl py-1 font-mono text-xs text-zinc-700 dark:text-zinc-200">
-              <button class="dropdown-lang-item w-full flex items-center justify-between px-3 py-1.5 hover:bg-zinc-100 dark:hover:bg-zinc-700/60 transition-colors text-left" data-lang="es" data-label="ESPAÑOL">
-                <span class="flex items-center gap-2">
-                  <span class="font-semibold text-[11px] px-1 bg-zinc-100 dark:bg-zinc-700 rounded text-zinc-500 dark:text-zinc-400">ES</span>
-                  Español
-                </span>
-                <span class="lang-check material-symbols-outlined text-[16px] text-primary">check</span>
-              </button>
-              <button class="dropdown-lang-item w-full flex items-center justify-between px-3 py-1.5 hover:bg-zinc-100 dark:hover:bg-zinc-700/60 transition-colors text-left" data-lang="en-US" data-label="ENGLISH (US)">
-                <span class="flex items-center gap-2">
-                  <span class="font-semibold text-[11px] px-1 bg-zinc-100 dark:bg-zinc-700 rounded text-zinc-500 dark:text-zinc-400">US</span>
-                  English (US)
-                </span>
-                <span class="lang-check material-symbols-outlined text-[16px] text-primary opacity-0">check</span>
-              </button>
-              <button class="dropdown-lang-item w-full flex items-center justify-between px-3 py-1.5 hover:bg-zinc-100 dark:hover:bg-zinc-700/60 transition-colors text-left" data-lang="en-GB" data-label="ENGLISH (UK)">
-                <span class="flex items-center gap-2">
-                  <span class="font-semibold text-[11px] px-1 bg-zinc-100 dark:bg-zinc-700 rounded text-zinc-500 dark:text-zinc-400">UK</span>
-                  English (UK)
-                </span>
-                <span class="lang-check material-symbols-outlined text-[16px] text-primary opacity-0">check</span>
-              </button>
-              <button class="dropdown-lang-item w-full flex items-center justify-between px-3 py-1.5 hover:bg-zinc-100 dark:hover:bg-zinc-700/60 transition-colors text-left" data-lang="de" data-label="DEUTSCH">
-                <span class="flex items-center gap-2">
-                  <span class="font-semibold text-[11px] px-1 bg-zinc-100 dark:bg-zinc-700 rounded text-zinc-500 dark:text-zinc-400">DE</span>
-                  Deutsch
-                </span>
-                <span class="lang-check material-symbols-outlined text-[16px] text-primary opacity-0">check</span>
-              </button>
-              <button class="dropdown-lang-item w-full flex items-center justify-between px-3 py-1.5 hover:bg-zinc-100 dark:hover:bg-zinc-700/60 transition-colors text-left" data-lang="fr" data-label="FRANÇAIS">
-                <span class="flex items-center gap-2">
-                  <span class="font-semibold text-[11px] px-1 bg-zinc-100 dark:bg-zinc-700 rounded text-zinc-500 dark:text-zinc-400">FR</span>
-                  Français
-                </span>
-                <span class="lang-check material-symbols-outlined text-[16px] text-primary opacity-0">check</span>
-              </button>
-              <button class="dropdown-lang-item w-full flex items-center justify-between px-3 py-1.5 hover:bg-zinc-100 dark:hover:bg-zinc-700/60 transition-colors text-left" data-lang="it" data-label="ITALIANO">
-                <span class="flex items-center gap-2">
-                  <span class="font-semibold text-[11px] px-1 bg-zinc-100 dark:bg-zinc-700 rounded text-zinc-500 dark:text-zinc-400">IT</span>
-                  Italiano
-                </span>
-                <span class="lang-check material-symbols-outlined text-[16px] text-primary opacity-0">check</span>
-              </button>
-              <button class="dropdown-lang-item w-full flex items-center justify-between px-3 py-1.5 hover:bg-zinc-100 dark:hover:bg-zinc-700/60 transition-colors text-left" data-lang="nl" data-label="NEDERLANDS">
-                <span class="flex items-center gap-2">
-                  <span class="font-semibold text-[11px] px-1 bg-zinc-100 dark:bg-zinc-700 rounded text-zinc-500 dark:text-zinc-400">NL</span>
-                  Nederlands
-                </span>
-                <span class="lang-check material-symbols-outlined text-[16px] text-primary opacity-0">check</span>
-              </button>
-              <button class="dropdown-lang-item w-full flex items-center justify-between px-3 py-1.5 hover:bg-zinc-100 dark:hover:bg-zinc-700/60 transition-colors text-left" data-lang="pt-BR" data-label="PORTUGUÊS (BR)">
-                <span class="flex items-center gap-2">
-                  <span class="font-semibold text-[11px] px-1 bg-zinc-100 dark:bg-zinc-700 rounded text-zinc-500 dark:text-zinc-400">BR</span>
-                  Português (BR)
-                </span>
-                <span class="lang-check material-symbols-outlined text-[16px] text-primary opacity-0">check</span>
-              </button>
-              <button class="dropdown-lang-item w-full flex items-center justify-between px-3 py-1.5 hover:bg-zinc-100 dark:hover:bg-zinc-700/60 transition-colors text-left" data-lang="pt-PT" data-label="PORTUGUÊS (PT)">
-                <span class="flex items-center gap-2">
-                  <span class="font-semibold text-[11px] px-1 bg-zinc-100 dark:bg-zinc-700 rounded text-zinc-500 dark:text-zinc-400">PT</span>
-                  Português (PT)
-                </span>
-                <span class="lang-check material-symbols-outlined text-[16px] text-primary opacity-0">check</span>
-              </button>
-              <button class="dropdown-lang-item w-full flex items-center justify-between px-3 py-1.5 hover:bg-zinc-100 dark:hover:bg-zinc-700/60 transition-colors text-left" data-lang="ca-ES" data-label="CATALÀ">
-                <span class="flex items-center gap-2">
-                  <span class="font-semibold text-[11px] px-1 bg-zinc-100 dark:bg-zinc-700 rounded text-zinc-500 dark:text-zinc-400">CA</span>
-                  Català
-                </span>
-                <span class="lang-check material-symbols-outlined text-[16px] text-primary opacity-0">check</span>
-              </button>
-              <button class="dropdown-lang-item w-full flex items-center justify-between px-3 py-1.5 hover:bg-zinc-100 dark:hover:bg-zinc-700/60 transition-colors text-left" data-lang="pl-PL" data-label="POLSKI">
-                <span class="flex items-center gap-2">
-                  <span class="font-semibold text-[11px] px-1 bg-zinc-100 dark:bg-zinc-700 rounded text-zinc-500 dark:text-zinc-400">PL</span>
-                  Polski
-                </span>
-                <span class="lang-check material-symbols-outlined text-[16px] text-primary opacity-0">check</span>
-              </button>
-              <button class="dropdown-lang-item w-full flex items-center justify-between px-3 py-1.5 hover:bg-zinc-100 dark:hover:bg-zinc-700/60 transition-colors text-left" data-lang="sv" data-label="SVENSKA">
-                <span class="flex items-center gap-2">
-                  <span class="font-semibold text-[11px] px-1 bg-zinc-100 dark:bg-zinc-700 rounded text-zinc-500 dark:text-zinc-400">SV</span>
-                  Svenska
-                </span>
-                <span class="lang-check material-symbols-outlined text-[16px] text-primary opacity-0">check</span>
-              </button>
-              <button class="dropdown-lang-item w-full flex items-center justify-between px-3 py-1.5 hover:bg-zinc-100 dark:hover:bg-zinc-700/60 transition-colors text-left" data-lang="ar" data-label="العربية">
-                <span class="flex items-center gap-2">
-                  <span class="font-semibold text-[11px] px-1 bg-zinc-100 dark:bg-zinc-700 rounded text-zinc-500 dark:text-zinc-400">AR</span>
-                  العربية
-                </span>
-                <span class="lang-check material-symbols-outlined text-[16px] text-primary opacity-0">check</span>
-              </button>
-              <button class="dropdown-lang-item w-full flex items-center justify-between px-3 py-1.5 hover:bg-zinc-100 dark:hover:bg-zinc-700/60 transition-colors text-left" data-lang="ja-JP" data-label="日本語">
-                <span class="flex items-center gap-2">
-                  <span class="font-semibold text-[11px] px-1 bg-zinc-100 dark:bg-zinc-700 rounded text-zinc-500 dark:text-zinc-400">JA</span>
-                  日本語
-                </span>
-                <span class="lang-check material-symbols-outlined text-[16px] text-primary opacity-0">check</span>
-              </button>
-              <button class="dropdown-lang-item w-full flex items-center justify-between px-3 py-1.5 hover:bg-zinc-100 dark:hover:bg-zinc-700/60 transition-colors text-left" data-lang="ru-RU" data-label="Русский">
-                <span class="flex items-center gap-2">
-                  <span class="font-semibold text-[11px] px-1 bg-zinc-100 dark:bg-zinc-700 rounded text-zinc-500 dark:text-zinc-400">RU</span>
-                  Русский
-                </span>
-                <span class="lang-check material-symbols-outlined text-[16px] text-primary opacity-0">check</span>
-              </button>
-            </div>
-          </div>
-          <!-- History & Clipboard -->
-          <div class="flex items-center gap-1 pl-1">
+          <div class="flex items-center gap-1">
+            <select id="langSelect"
+              class="bg-transparent text-xs font-bold uppercase tracking-wider border-none focus:ring-0 cursor-pointer hover:text-primary rounded text-slate-500 dark:text-slate-400 outline-none">
+              <option value="es">Español</option>
+              <option value="en-US">English (US)</option>
+              <option value="en-GB">English (UK)</option>
+              <option value="de">Deutsch</option>
+              <option value="fr">Français</option>
+              <option value="it">Italiano</option>
+              <option value="nl">Nederlands</option>
+              <option value="pt-BR">Português (BR)</option>
+              <option value="pt-PT">Português (PT)</option>
+              <option value="ca-ES">Català</option>
+              <option value="pl-PL">Polski</option>
+              <option value="sv">Svenska</option>
+              <option value="ar">العربية</option>
+              <option value="ja-JP">日本語</option>
+              <option value="ru-RU">Русский</option>
+            </select>
+            <div class="w-px h-4 bg-slate-300 dark:bg-slate-600 mx-1"></div>
             <button id="undoBtn" aria-label="Deshacer"
-              class="flex items-center justify-center w-8 h-8 hover:bg-zinc-200/60 dark:hover:bg-zinc-700 rounded-sm transition-colors text-zinc-600 dark:text-zinc-300" title="Deshacer"><span
-                class="material-symbols-outlined text-[24px]">undo</span></button>
+              class="p-1.5 text-slate-400 hover:text-primary transition-colors rounded" title="Deshacer"><span
+                class="material-icons-outlined text-[24px]">undo</span></button>
             <button id="redoBtn" aria-label="Rehacer"
-              class="flex items-center justify-center w-8 h-8 hover:bg-zinc-200/60 dark:hover:bg-zinc-700 rounded-sm transition-colors text-zinc-600 dark:text-zinc-300" title="Rehacer"><span
-                class="material-symbols-outlined text-[24px]">redo</span></button>
+              class="p-1.5 text-slate-400 hover:text-primary transition-colors rounded" title="Rehacer"><span
+                class="material-icons-outlined text-[24px]">redo</span></button>
             <button id="copyBtn" aria-label="Copiar"
-              class="flex items-center justify-center w-8 h-8 hover:bg-zinc-200/60 dark:hover:bg-zinc-700 rounded-sm transition-colors text-zinc-600 dark:text-zinc-300" title="Copiar"><span
-                class="material-symbols-outlined text-[24px]">content_copy</span></button>
+              class="p-1.5 text-slate-400 hover:text-primary transition-colors rounded" title="Copiar"><span
+                class="material-icons-outlined text-[24px]">content_copy</span></button>
             <button id="clearBtn" aria-label="Borrar"
-              class="flex items-center justify-center w-8 h-8 hover:bg-zinc-200/60 dark:hover:bg-zinc-700 rounded-sm transition-colors text-red-500/70 hover:text-red-600 dark:text-red-400 dark:hover:text-red-300" title="Borrar"><span
-                class="material-symbols-outlined text-[24px]">delete</span></button>
+              class="p-1.5 text-slate-400 hover:text-red-500 transition-colors rounded" title="Borrar"><span
+                class="material-icons-outlined text-[24px]">delete_outline</span></button>
+          </div>
+        </div>
+
+        <div class="flex-grow relative group bg-white dark:bg-transparent">
+          <textarea id="editor"
+            class="w-full h-full p-8 text-lg bg-transparent border-none focus:ring-0 resize-none placeholder-gray-400 dark:placeholder-gray-600 custom-scrollbar font-sans leading-relaxed text-gray-800 dark:text-gray-200"
+            placeholder="Comienza a escribir..."></textarea>
+        </div>
+
+        <div
+          class="px-6 py-3 bg-slate-50 dark:bg-dark-bg/50 border-t border-slate-100 dark:border-dark-border flex justify-between items-center text-[10px] font-bold text-slate-400 uppercase tracking-widest surface-element">
+          <button id="exampleBtn" aria-label="Insertar ejemplo de texto"
+            class="flex items-center gap-2 px-4 py-2 bg-primary/10 text-primary rounded-lg text-sm font-medium hover:bg-primary/20 transition-all">
+            <span class="material-icons-outlined text-[24px]">format_quote</span>
+            Ejemplo de texto
+          </button>
+          <div class="flex gap-4">
+            <span id="wordCount">0 PALABRAS</span>
+            <span id="charCount">0 CARACTERES</span>
           </div>
         </div>
       </div>
 
-      <!-- Editor Textarea -->
-      <div class="flex-1 relative">
-        <textarea id="editor"
-          class="w-full h-full p-6 resize-none outline-none border-none focus:ring-0 text-base font-mono leading-relaxed text-zinc-800 dark:text-zinc-100 placeholder-zinc-400 dark:placeholder-zinc-500 bg-transparent custom-scrollbar"
-          placeholder="Comienza a escribir..." spellcheck="false"></textarea>
-      </div>
-
-      <!-- Footer Bar -->
-      <div class="flex items-center justify-between px-4 py-2 border-t border-zinc-200/60 dark:border-zinc-700/50 bg-zinc-50/50 dark:bg-zinc-800/50 shrink-0 text-xs font-mono text-zinc-500 dark:text-zinc-400">
-        <button id="exampleBtn" aria-label="Insertar ejemplo de texto"
-          class="flex items-center gap-2 text-primary hover:text-primary/80 transition-colors font-sans font-medium px-2 py-1 rounded-sm hover:bg-primary/10">
-          <span class="material-symbols-outlined text-[22px]">format_quote</span>
-          Ejemplo de texto
-        </button>
-        <div class="flex gap-4">
-          <span id="wordCount">0 PALABRAS</span>
-          <span id="charCount">0 CARACTERES</span>
+      <div
+        class="bg-white dark:bg-dark-surface surface-element rounded-2xl shadow-xl shadow-slate-200/50 dark:shadow-none border border-slate-100 dark:border-dark-border flex flex-col overflow-hidden relative transition-all duration-300">
+        <div
+          class="py-4 px-6 border-b border-slate-100 dark:border-dark-border flex justify-between items-center bg-slate-50/50 dark:bg-dark-surface surface-element">
+          <h3 id="panelTitle"
+            class="font-bold text-slate-700 dark:text-slate-200 flex items-center gap-2 text-sm uppercase tracking-wide">
+            <span class="material-icons-outlined text-primary">insights</span>
+            Sugerencias
+          </h3>
         </div>
-      </div>
-    </section>
-    <!-- END: Editor Column -->
 
-    <!-- BEGIN: Suggestions Sidebar -->
-    <aside class="w-80 flex flex-col bg-zinc-50 dark:bg-zinc-800 shrink-0 border-l border-zinc-200/60 dark:border-zinc-700/50" data-purpose="suggestions-sidebar">
-      <!-- Sidebar Header -->
-      <div class="flex items-center gap-2 px-4 py-3 border-b border-zinc-200/60 dark:border-zinc-700/50 h-10 shrink-0 bg-white dark:bg-zinc-800">
-        <h2 id="panelTitle"
-          class="text-xs font-bold tracking-wider text-zinc-700 dark:text-zinc-300 flex items-center gap-2 uppercase">
-          <span class="material-symbols-outlined text-primary text-[24px]">auto_awesome</span>
-          SUGERENCIAS
-        </h2>
-      </div>
-
-      <!-- Sidebar Content -->
-      <div id="resultsPanel" class="flex-1 overflow-y-auto p-4 custom-scrollbar">
-        <div id="emptyState" class="flex flex-col items-center justify-center p-6 text-center h-full">
-          <div class="w-14 h-14 bg-zinc-100 dark:bg-zinc-800/50 rounded-full flex items-center justify-center mb-4 border border-zinc-200/60 dark:border-zinc-700/50">
-            <span class="material-symbols-outlined text-zinc-400 dark:text-zinc-500 text-[30px]">auto_awesome</span>
+        <div id="resultsPanel"
+          class="flex-grow overflow-y-auto p-4 custom-scrollbar bg-slate-50/30 dark:bg-transparent">
+          <div id="emptyState" class="flex flex-col items-center justify-center text-center p-6 opacity-60 h-full">
+            <div
+              class="w-16 h-16 bg-slate-100 dark:bg-slate-800 rounded-full flex items-center justify-center mb-4 text-slate-300 dark:text-slate-600">
+              <span class="material-icons-outlined text-3xl">auto_awesome</span>
+            </div>
+            <p class="text-xs font-medium text-slate-400 uppercase tracking-wider">Esperando texto...</p>
           </div>
-          <p class="text-xs font-mono text-zinc-400 dark:text-zinc-500 tracking-wide uppercase">Esperando texto...</p>
+        </div>
+
+        <div id="previewPanel"
+          class="hidden flex-grow overflow-y-auto p-8 custom-scrollbar prose dark:prose-invert prose-lg max-w-none font-serif leading-loose">
         </div>
       </div>
-
-      <!-- Preview Panel -->
-      <div id="previewPanel"
-        class="hidden flex-1 overflow-y-auto p-6 custom-scrollbar prose dark:prose-invert prose-sm max-w-none font-sans leading-relaxed text-zinc-800 dark:text-zinc-200">
-      </div>
-    </aside>
-    <!-- END: Suggestions Sidebar -->
+    </div>
   </main>
-  <!-- END: Main Workspace -->
 
-  <!-- Theme Settings Modal -->
-  <div id="themeModal" class="fixed inset-0 z-50 hidden flex items-center justify-center p-4 sm:p-6 backdrop-blur-sm bg-black/40">
-    <div id="themeModalBackdrop" class="absolute inset-0 bg-black/40 backdrop-blur-sm transition-opacity opacity-0"></div>
+  <div id="themeModal" class="fixed inset-0 z-[100] hidden">
+    <div id="themeModalBackdrop" class="absolute inset-0 bg-slate-900/40 backdrop-blur-sm transition-opacity opacity-0">
+    </div>
 
-    <div id="themeModalContent"
-      class="relative z-10 bg-white dark:bg-zinc-900 border border-zinc-200 dark:border-zinc-800 rounded-lg w-full max-w-md shadow-2xl flex flex-col max-h-[85vh] transform scale-95 opacity-0 transition-all duration-200">
+    <div
+      class="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-full max-w-sm bg-white dark:bg-slate-800 rounded-2xl shadow-2xl border border-slate-200 dark:border-slate-700 p-6 transform scale-95 opacity-0 transition-all duration-200"
+      id="themeModalContent">
 
-      <!-- Modal Header -->
-      <div class="flex items-center justify-between p-4 border-b border-zinc-200 dark:border-zinc-800 shrink-0">
-        <div class="flex items-center gap-3">
-          <span class="material-symbols-outlined text-zinc-500 dark:text-zinc-400 text-[26px]">tune</span>
-          <h2 class="font-mono text-zinc-900 dark:text-zinc-100 text-sm tracking-wide uppercase font-semibold">Preferencias</h2>
-        </div>
-        <button id="closeThemeModal" class="flex items-center justify-center w-8 h-8 text-zinc-500 hover:text-zinc-800 dark:hover:text-zinc-200 transition-colors">
-          <span class="material-symbols-outlined text-[24px]">close</span>
+      <div class="flex justify-between items-center mb-6">
+        <h2 class="text-lg font-bold font-display text-slate-800 dark:text-white">Preferencias</h2>
+        <button id="closeThemeModal" class="text-slate-400 hover:text-slate-600 dark:hover:text-slate-200">
+          <span class="material-icons-outlined">close</span>
         </button>
       </div>
 
-      <!-- Modal Content -->
-      <div class="flex-1 overflow-y-auto p-6 font-mono text-[12px] text-zinc-700 dark:text-zinc-300 flex flex-col gap-6">
-        <!-- Appearance Section -->
-        <section>
-          <h3 class="text-zinc-400 dark:text-zinc-500 uppercase tracking-widest mb-4 border-b border-zinc-200 dark:border-zinc-800 pb-2 text-[11px] font-semibold">Apariencia</h3>
-          <div class="flex flex-col gap-4">
-            <!-- Theme Toggle -->
-            <div class="flex flex-col gap-2">
-              <label class="text-zinc-600 dark:text-zinc-400">Tema de Color</label>
-              <div class="flex bg-zinc-100 dark:bg-zinc-800/50 p-1 rounded border border-zinc-200 dark:border-zinc-800">
-                <button
-                  class="theme-option-btn flex-1 py-1.5 text-center rounded transition-colors text-zinc-500 dark:text-zinc-400 hover:text-zinc-800 dark:hover:text-zinc-200 font-mono"
-                  data-mode="light">Claro</button>
-                <button
-                  class="theme-option-btn flex-1 py-1.5 text-center rounded transition-colors text-zinc-500 dark:text-zinc-400 hover:text-zinc-800 dark:hover:text-zinc-200 font-mono"
-                  data-mode="dark">Oscuro</button>
-                <button
-                  class="theme-option-btn flex-1 py-1.5 text-center rounded transition-colors text-zinc-500 dark:text-zinc-400 hover:text-zinc-800 dark:hover:text-zinc-200 font-mono"
-                  data-mode="black">Negro</button>
-              </div>
-            </div>
+      <div class="mb-6">
+        <label class="block text-sm font-medium text-slate-600 dark:text-slate-300 mb-3">Tema</label>
+        <div class="flex bg-slate-100 dark:bg-slate-900/50 p-1 rounded-lg">
+          <button
+            class="theme-option-btn flex-1 py-2 rounded-md text-sm font-medium text-slate-500 transition-all flex items-center justify-center gap-2"
+            data-mode="light">
+            <span class="material-icons-outlined text-[16px]">light_mode</span> Claro
+          </button>
+          <button
+            class="theme-option-btn flex-1 py-2 rounded-md text-sm font-medium text-slate-500 transition-all flex items-center justify-center gap-2"
+            data-mode="dark">
+            <span class="material-icons-outlined text-[16px]">dark_mode</span> Oscuro
+          </button>
+          <button
+            class="theme-option-btn flex-1 py-2 rounded-md text-sm font-medium text-slate-500 transition-all flex items-center justify-center gap-2"
+            data-mode="black">
+            <span class="material-icons-outlined text-[16px]">contrast</span> Negro
+          </button>
+        </div>
+      </div>
 
-            <!-- Accent Color -->
-            <div class="flex flex-col gap-2">
-              <label class="text-zinc-600 dark:text-zinc-400">Color Principal</label>
-              <div class="flex items-center gap-3">
-                <button class="color-btn w-6 h-6 rounded-full bg-[#6366f1] hover:scale-110 transition-transform cursor-pointer"
-                  data-color="99 102 241"></button>
-                <button class="color-btn w-6 h-6 rounded-full bg-[#3b82f6] hover:scale-110 transition-transform cursor-pointer"
-                  data-color="59 130 246"></button>
-                <button class="color-btn w-6 h-6 rounded-full bg-[#10b981] hover:scale-110 transition-transform cursor-pointer"
-                  data-color="16 185 129"></button>
-                <button class="color-btn w-6 h-6 rounded-full bg-[#f59e0b] hover:scale-110 transition-transform cursor-pointer"
-                  data-color="245 158 11"></button>
-                <button class="color-btn w-6 h-6 rounded-full bg-[#f43f5e] hover:scale-110 transition-transform cursor-pointer"
-                  data-color="244 63 94"></button>
-              </div>
-            </div>
-          </div>
-        </section>
+      <div>
+        <label class="block text-sm font-medium text-slate-600 dark:text-slate-300 mb-3">Color principal</label>
+        <div class="flex justify-between gap-2">
+          <button class="color-btn w-10 h-10 rounded-full bg-[#6366f1] hover:scale-105 transition-transform"
+            data-color="99 102 241"></button>
+          <button class="color-btn w-10 h-10 rounded-full bg-[#3b82f6] hover:scale-105 transition-transform"
+            data-color="59 130 246"></button>
+          <button class="color-btn w-10 h-10 rounded-full bg-[#10b981] hover:scale-105 transition-transform"
+            data-color="16 185 129"></button>
+          <button class="color-btn w-10 h-10 rounded-full bg-[#f59e0b] hover:scale-105 transition-transform"
+            data-color="245 158 11"></button>
+          <button class="color-btn w-10 h-10 rounded-full bg-[#f43f5e] hover:scale-105 transition-transform"
+            data-color="244 63 94"></button>
+        </div>
       </div>
     </div>
   </div>
