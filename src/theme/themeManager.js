@@ -16,18 +16,30 @@ export const ThemeManager = {
         document.getElementById('closeThemeModal').addEventListener('click', () => this.closeModal());
         document.getElementById('themeModalBackdrop').addEventListener('click', () => this.closeModal());
 
+        // Atajo teclado ESC para cerrar modal
+        document.addEventListener('keydown', (e) => {
+            if (e.key === 'Escape') {
+                const modal = document.getElementById('themeModal');
+                if (modal && !modal.classList.contains('hidden')) {
+                    this.closeModal();
+                }
+            }
+        });
+
         document.querySelectorAll('.theme-option-btn').forEach(btn => {
             btn.addEventListener('click', (e) => {
                 const mode = e.currentTarget.dataset.mode;
-                this.applyTheme(mode);
-                this.updateUI();
+                if (mode !== this.config.mode) {
+                    this.applyTheme(mode);
+                    this.updateUI();
+                }
             });
         });
 
         document.querySelectorAll('.color-btn').forEach(btn => {
             btn.addEventListener('click', (e) => {
                 const color = e.currentTarget.dataset.color || e.target.dataset.color;
-                if (color) {
+                if (color && color !== this.config.colorRGB) {
                     this.applyColor(color);
                     this.updateUI();
                 }
@@ -41,10 +53,10 @@ export const ThemeManager = {
         const content = document.getElementById('themeModalContent');
 
         modal.classList.remove('hidden');
-        setTimeout(() => {
+        requestAnimationFrame(() => {
             backdrop.classList.remove('opacity-0');
             content.classList.remove('opacity-0', 'scale-95');
-        }, 10);
+        });
         this.updateUI();
     },
 

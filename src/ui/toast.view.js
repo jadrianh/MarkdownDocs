@@ -16,7 +16,7 @@ export const ToastView = {
 
         toast.className = `${colors[type]} px-3.5 py-2.5 rounded shadow-lg flex items-center gap-2.5 min-w-[220px] pointer-events-auto transition-all duration-300 font-mono text-xs`;
         toast.innerHTML = `
-            <span class="material-symbols-outlined text-[18px]">${icons[type]}</span>
+            <span class="material-symbols-outlined text-[24px]">${icons[type]}</span>
             <span class="font-medium">${message}</span>
         `;
 

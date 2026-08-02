@@ -31,14 +31,14 @@ export const EditorView = {
         if (isPreviewMode) {
             this.elements.resultsPanel.classList.add('hidden');
             this.elements.previewPanel.classList.remove('hidden');
-            this.elements.panelTitle.innerHTML = '<span class="material-symbols-outlined text-primary text-[18px]">visibility</span> VISTA PREVIA';
+            this.elements.panelTitle.innerHTML = '<span class="material-symbols-outlined text-primary text-[24px]">visibility</span> VISTA PREVIA';
             this.elements.toggleViewText.textContent = "VER SUGERENCIAS";
             this.elements.toggleViewIcon.textContent = "auto_awesome"; 
             this.updatePreview();
         } else {
             this.elements.resultsPanel.classList.remove('hidden');
             this.elements.previewPanel.classList.add('hidden');
-            this.elements.panelTitle.innerHTML = '<span class="material-symbols-outlined text-primary text-[18px]">auto_awesome</span> SUGERENCIAS';
+            this.elements.panelTitle.innerHTML = '<span class="material-symbols-outlined text-primary text-[24px]">auto_awesome</span> SUGERENCIAS';
             this.elements.toggleViewText.textContent = "VISTA PREVIA";
             this.elements.toggleViewIcon.textContent = "text_snippet"; 
         }

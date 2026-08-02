@@ -16,8 +16,8 @@ export const GrammarView = {
     renderEmptyState() {
         this.elements.resultsPanel.innerHTML = `
             <div id="emptyState" class="flex flex-col items-center justify-center text-center p-6 h-full">
-                <div class="w-12 h-12 bg-zinc-100 dark:bg-zinc-800/50 rounded-full flex items-center justify-center mb-4 border border-zinc-200/60 dark:border-zinc-700/50">
-                    <span class="material-symbols-outlined text-zinc-400 dark:text-zinc-500">auto_awesome</span>
+                <div class="w-14 h-14 bg-zinc-100 dark:bg-zinc-800/50 rounded-full flex items-center justify-center mb-4 border border-zinc-200/60 dark:border-zinc-700/50">
+                    <span class="material-symbols-outlined text-zinc-400 dark:text-zinc-500 text-[30px]">auto_awesome</span>
                 </div>
                 <p class="text-xs font-mono text-zinc-400 dark:text-zinc-500 tracking-wide uppercase">Esperando texto...</p>
             </div>`;
@@ -29,7 +29,7 @@ export const GrammarView = {
         if (!matches || matches.length === 0) {
             this.elements.resultsPanel.innerHTML = `
                 <div class="flex flex-col items-center justify-center h-full text-emerald-600 dark:text-emerald-400 font-mono text-xs text-center p-6">
-                    <span class="material-symbols-outlined text-4xl mb-2">check_circle</span>
+                    <span class="material-symbols-outlined text-5xl mb-2">check_circle</span>
                     <p class="font-semibold uppercase tracking-wider">¡Texto impecable!</p>
                 </div>`;
             return;
@@ -59,8 +59,8 @@ export const GrammarView = {
 
             card.innerHTML = `
                 <div class="flex items-center justify-between mb-2">
-                    <span class="text-[11px] font-bold text-red-500 uppercase tracking-wider flex items-center gap-1">
-                        <span class="material-symbols-outlined text-sm">error_outline</span> CORRECCIÓN
+                    <span class="text-[11px] font-bold text-red-500 uppercase tracking-wider flex items-center gap-1.5">
+                        <span class="material-symbols-outlined text-[18px]">error</span> CORRECCIÓN
                     </span>
                 </div>
                 <div class="text-xs text-zinc-700 dark:text-zinc-300 mb-2 font-mono leading-relaxed bg-zinc-50 dark:bg-zinc-800/50 p-2 rounded border border-zinc-100 dark:border-zinc-800/80">
