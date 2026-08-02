@@ -26,9 +26,11 @@ export const ThemeManager = {
 
         document.querySelectorAll('.color-btn').forEach(btn => {
             btn.addEventListener('click', (e) => {
-                const color = e.target.dataset.color;
-                this.applyColor(color);
-                this.updateUI();
+                const color = e.currentTarget.dataset.color || e.target.dataset.color;
+                if (color) {
+                    this.applyColor(color);
+                    this.updateUI();
+                }
             });
         });
     },
