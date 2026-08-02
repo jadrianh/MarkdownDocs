@@ -1,4 +1,4 @@
-import { describe, it, expect } from 'vitest';
+import { describe, it, expect, beforeEach, vi } from 'vitest';
 import { EditorService } from '../../src/editor/editor.service.js';
 
 const makeTA = (value, start, end) => ({
@@ -55,6 +55,76 @@ describe('EditorService.makeList()', () => {
   });
 });
 
+describe('EditorService.applyHeader()', () => {
+  it('applies H1 header prefix', () => {
+    const result = EditorService.applyHeader(makeTA('Hello', 0, 5), 1);
+    expect(result).toBe('# Hello');
+  });
+
+  it('applies H2 header prefix', () => {
+    const result = EditorService.applyHeader(makeTA('Hello', 0, 5), 2);
+    expect(result).toBe('## Hello');
+  });
+
+  it('applies H3 header prefix', () => {
+    const result = EditorService.applyHeader(makeTA('Hello', 0, 5), 3);
+    expect(result).toBe('### Hello');
+  });
+
+  it('removes existing header prefix when level is 0', () => {
+    const result = EditorService.applyHeader(makeTA('## Hello', 0, 8), 0);
+    expect(result).toBe('Hello');
+  });
+});
+
+describe('EditorService.clearFormatting()', () => {
+  it('removes bold, italic, strikethrough, and inline code formatting', () => {
+    const text = '**bold** *italic* ~~striked~~ `code`';
+    const ta = makeTA(text, 0, text.length);
+    const result = EditorService.clearFormatting(ta);
+    expect(result).toBe('bold italic striked code');
+  });
+});
+
+describe('EditorService.insertElements()', () => {
+  it('inserts link markdown for selected text', () => {
+    const result = EditorService.insertLink(makeTA('Google', 0, 6));
+    expect(result).toBe('[Google](https://)');
+  });
+
+  it('inserts code block for selected text', () => {
+    const result = EditorService.insertCodeBlock(makeTA('const a = 1;', 0, 12));
+    expect(result).toBe('```\nconst a = 1;\n```');
+  });
+
+  it('inserts quote prefix for selected line', () => {
+    const result = EditorService.insertQuote(makeTA('Quote text', 0, 10));
+    expect(result).toBe('> Quote text');
+  });
+});
+
+describe('EditorService.downloadMarkdown()', () => {
+  beforeEach(() => {
+    global.URL.createObjectURL = vi.fn(() => 'blob:mock-url');
+    global.URL.revokeObjectURL = vi.fn();
+  });
+
+  it('generates filename from H1 heading if present', () => {
+    const filename = EditorService.downloadMarkdown('# Mi Documento Especial\n\nTexto aquí');
+    expect(filename).toBe('mi-documento-especial.md');
+  });
+
+  it('defaults to documento.md if no H1 heading exists', () => {
+    const filename = EditorService.downloadMarkdown('Solo texto plano sin titulo');
+    expect(filename).toBe('documento.md');
+  });
+
+  it('uses custom filename if specified', () => {
+    const filename = EditorService.downloadMarkdown('Contenido', 'mi-nota');
+    expect(filename).toBe('mi-nota.md');
+  });
+});
+
 describe('EditorService.parseMarkdown()', () => {
   const cases = [
     ['# H1',              /<h1/],
@@ -62,6 +132,9 @@ describe('EditorService.parseMarkdown()', () => {
     ['### H3',            /<h3/],
     ['**bold**',          /<strong>bold<\/strong>/],
     ['*italic*',          /<em>italic<\/em>/],
+    ['~~striked~~',       /<del>striked<\/del>/],
+    ['`code`',            /<code/],
+    ['> quote',           /<blockquote/],
     ['- list item',       /<li/],
     ['[link](https://x)', /href='https:\/\/x'/],
   ];
