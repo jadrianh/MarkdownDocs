@@ -9,7 +9,9 @@ test.describe('Toolbar Formatting → Preview Output', () => {
     const editor = page.locator('#editor');
     await editor.fill('texto de prueba');
     await editor.selectText();
-    await page.click('#btnBold');
+    const btnBold = page.locator('#btnBold');
+    await btnBold.scrollIntoViewIfNeeded();
+    await btnBold.click();
 
     await page.click('#toggleViewBtn');
     await expect(page.locator('#previewPanel strong')).toBeVisible();
@@ -20,7 +22,9 @@ test.describe('Toolbar Formatting → Preview Output', () => {
     const editor = page.locator('#editor');
     await editor.fill('texto cursivo');
     await editor.selectText();
-    await page.click('#btnItalic');
+    const btnItalic = page.locator('#btnItalic');
+    await btnItalic.scrollIntoViewIfNeeded();
+    await btnItalic.click();
 
     await page.click('#toggleViewBtn');
     await expect(page.locator('#previewPanel em')).toBeVisible();
@@ -31,7 +35,9 @@ test.describe('Toolbar Formatting → Preview Output', () => {
     const editor = page.locator('#editor');
     await editor.fill('primer ítem\nsegundo ítem');
     await editor.selectText();
-    await page.click('#btnListUl');
+    const btnListUl = page.locator('#btnListUl');
+    await btnListUl.scrollIntoViewIfNeeded();
+    await btnListUl.click();
 
     await page.click('#toggleViewBtn');
     const items = page.locator('#previewPanel li');

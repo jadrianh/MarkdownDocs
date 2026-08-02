@@ -84,7 +84,7 @@ export const EditorService = {
 
         const newLines = lines.map((line) => {
             if (line.trim().length === 0) return line;
-            const clean = line.replace(/^(\- |\* |\d+\. )/, ''); 
+            const clean = line.replace(/^(- |\* |\d+\. )/, ''); 
             return listType === 'ordered' ? `${counter++}. ${clean}` : `- ${clean}`;
         });
 
@@ -210,7 +210,7 @@ export const EditorService = {
             .replace(/`([^`]+)`/gim, '<code class="bg-zinc-200 dark:bg-zinc-700 px-1.5 py-0.5 rounded font-mono text-xs">$1</code>')
             .replace(/\*(.*?)\*/gim, '<em>$1</em>')
             .replace(/^(?:&gt;|>)\s?(.*$)/gim, '<blockquote class="border-l-4 border-primary pl-4 italic my-2 text-zinc-600 dark:text-zinc-400">$1</blockquote>')
-            .replace(/^\- (.*$)/gim, '<li class="ml-4 list-disc">$1</li>')
+            .replace(/^- (.*$)/gim, '<li class="ml-4 list-disc">$1</li>')
             .replace(/\[(.*?)\]\((.*?)\)/gim, "<a href='$2' class='text-primary hover:underline' target='_blank'>$1</a>")
             .replace(/\n/gim, '<br />');
     }
