@@ -68,7 +68,7 @@
   <div id="toast-container" class="fixed bottom-6 right-6 z-[100] flex flex-col gap-2 pointer-events-none font-mono text-xs"></div>
 
   <!-- Attribution -->
-  <div class="fixed bottom-16 left-3 text-[10px] font-mono text-zinc-400 dark:text-zinc-500 pointer-events-none z-10">
+  <div class="fixed bottom-4 left-4 text-[10px] font-mono text-zinc-400 dark:text-zinc-500 pointer-events-none z-10">
     Made By: Adrian H.
   </div>
 
@@ -86,12 +86,7 @@
     </div>
     <!-- Actions -->
     <div class="flex items-center gap-2 text-sm font-medium">
-      <button id="toggleViewBtn" aria-label="Cambiar vista"
-        class="flex items-center justify-center gap-2 px-3.5 py-1.5 text-zinc-600 dark:text-zinc-300 hover:text-zinc-900 dark:hover:text-zinc-100 hover:bg-zinc-100 dark:hover:bg-zinc-700 rounded-sm transition-colors"
-        title="Cambiar vista">
-        <span id="toggleViewIcon" class="material-symbols-outlined text-[20px]">text_snippet</span>
-        <span id="toggleViewText" class="text-xs font-semibold tracking-wide">VISTA PREVIA</span>
-      </button>
+
 
       <button id="downloadMdBtn" aria-label="Descargar archivo Markdown (.md)"
         class="flex items-center justify-center gap-2 px-3.5 py-1.5 text-zinc-600 dark:text-zinc-300 hover:text-zinc-900 dark:hover:text-zinc-100 hover:bg-zinc-100 dark:hover:bg-zinc-700 rounded-sm transition-colors"
@@ -290,7 +285,6 @@
             <button id="btnLanguage" aria-label="Seleccionar idioma de corrección"
               class="dropdown-trigger flex items-center justify-center gap-1.5 px-2 h-8 hover:bg-zinc-200/60 dark:hover:bg-zinc-700 rounded-sm transition-colors text-zinc-600 dark:text-zinc-300 font-mono text-xs"
               title="Idioma de corrección">
-              <span class="material-symbols-outlined text-[20px]">translate</span>
               <span id="currentLangText" class="font-medium uppercase text-xs tracking-wide">ESPAÑOL</span>
               <span class="material-symbols-outlined text-[16px] text-zinc-400">arrow_drop_down</span>
             </button>
@@ -403,6 +397,15 @@
               </button>
             </div>
           </div>
+          <!-- Editor/Preview Toggle Button -->
+          <button id="toggleViewBtn" aria-label="Alternar entre editor y vista previa"
+            class="flex items-center justify-center w-8 h-8 hover:bg-zinc-200/60 dark:hover:bg-zinc-700 rounded-sm transition-colors text-zinc-600 dark:text-zinc-300"
+            title="Alternar editor / vista previa">
+            <span id="toggleViewIcon" class="material-symbols-outlined text-[22px]">chrome_reader_mode</span>
+          </button>
+
+          <div class="w-px h-8 bg-zinc-200 dark:bg-zinc-700 mx-0.5"></div>
+
           <!-- History & Clipboard -->
           <div class="flex items-center gap-1 pl-1">
             <button id="undoBtn" aria-label="Deshacer"
@@ -421,20 +424,27 @@
         </div>
       </div>
 
-      <!-- Editor Textarea -->
-      <div class="flex-1 relative">
+      <!-- Editor / Preview Area -->
+      <div class="flex-1 relative overflow-hidden">
+        <!-- Editor Textarea -->
         <textarea id="editor"
-          class="w-full h-full p-6 resize-none outline-none border-none focus:ring-0 text-base font-mono leading-relaxed text-zinc-800 dark:text-zinc-100 placeholder-zinc-400 dark:placeholder-zinc-500 bg-transparent custom-scrollbar"
+          class="absolute inset-0 w-full h-full p-6 resize-none outline-none border-none focus:ring-0 text-base font-mono leading-relaxed text-zinc-800 dark:text-zinc-100 placeholder-zinc-400 dark:placeholder-zinc-500 bg-transparent custom-scrollbar"
           placeholder="Comienza a escribir..." spellcheck="false"></textarea>
+
+        <!-- Preview Panel (comparte espacio con el editor) -->
+        <div id="previewPanel"
+          class="hidden absolute inset-0 overflow-y-auto p-6 custom-scrollbar prose dark:prose-invert prose-sm max-w-none font-sans leading-relaxed text-zinc-800 dark:text-zinc-200 bg-white dark:bg-zinc-900">
+        </div>
       </div>
 
       <!-- Footer Bar -->
-      <div class="flex items-center justify-between px-4 py-2 border-t border-zinc-200/60 dark:border-zinc-700/50 bg-zinc-50/50 dark:bg-zinc-800/50 shrink-0 text-xs font-mono text-zinc-500 dark:text-zinc-400">
+      <div class="flex w-full items-center justify-end gap-4 px-4 py-2 border-t border-zinc-200/60 dark:border-zinc-700/50 bg-zinc-50/50 dark:bg-zinc-800/50 shrink-0 text-xs font-mono text-zinc-500 dark:text-zinc-400">
         <button id="exampleBtn" aria-label="Insertar ejemplo de texto"
           class="flex items-center gap-2 text-primary hover:text-primary/80 transition-colors font-sans font-medium px-2 py-1 rounded-sm hover:bg-primary/10">
           <span class="material-symbols-outlined text-[22px]">format_quote</span>
           Ejemplo de texto
         </button>
+
         <div class="flex gap-4">
           <span id="wordCount">0 PALABRAS</span>
           <span id="charCount">0 CARACTERES</span>
@@ -447,8 +457,7 @@
     <aside class="w-80 flex flex-col bg-zinc-50 dark:bg-zinc-800 shrink-0 border-l border-zinc-200/60 dark:border-zinc-700/50" data-purpose="suggestions-sidebar">
       <!-- Sidebar Header -->
       <div class="flex items-center gap-2 px-4 py-3 border-b border-zinc-200/60 dark:border-zinc-700/50 h-10 shrink-0 bg-white dark:bg-zinc-800">
-        <h2 id="panelTitle"
-          class="text-xs font-bold tracking-wider text-zinc-700 dark:text-zinc-300 flex items-center gap-2 uppercase">
+        <h2 class="text-xs font-bold tracking-wider text-zinc-700 dark:text-zinc-300 flex items-center gap-2 uppercase">
           <span class="material-symbols-outlined text-primary text-[24px]">auto_awesome</span>
           SUGERENCIAS
         </h2>
@@ -462,11 +471,6 @@
           </div>
           <p class="text-xs font-mono text-zinc-400 dark:text-zinc-500 tracking-wide uppercase">Esperando texto...</p>
         </div>
-      </div>
-
-      <!-- Preview Panel -->
-      <div id="previewPanel"
-        class="hidden flex-1 overflow-y-auto p-6 custom-scrollbar prose dark:prose-invert prose-sm max-w-none font-sans leading-relaxed text-zinc-800 dark:text-zinc-200">
       </div>
     </aside>
     <!-- END: Suggestions Sidebar -->

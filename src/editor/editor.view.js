@@ -7,9 +7,6 @@ export const EditorView = {
         wordCount: document.getElementById('wordCount'),
         charCount: document.getElementById('charCount'),
         previewPanel: document.getElementById('previewPanel'),
-        resultsPanel: document.getElementById('resultsPanel'),
-        panelTitle: document.getElementById('panelTitle'),
-        toggleViewText: document.getElementById('toggleViewText'),
         toggleViewIcon: document.getElementById('toggleViewIcon')
     },
 
@@ -29,18 +26,18 @@ export const EditorView = {
         state.setPreviewMode(isPreviewMode);
 
         if (isPreviewMode) {
-            this.elements.resultsPanel.classList.add('hidden');
+            // Mostrar preview, ocultar editor
+            this.elements.editor.classList.add('hidden');
             this.elements.previewPanel.classList.remove('hidden');
-            this.elements.panelTitle.innerHTML = '<span class="material-symbols-outlined text-primary text-[24px]">visibility</span> VISTA PREVIA';
-            this.elements.toggleViewText.textContent = "CORRECTOR";
-            this.elements.toggleViewIcon.textContent = "auto_awesome"; 
+            this.elements.toggleViewIcon.textContent = 'border_color';
+            this.elements.toggleViewIcon.title = 'Volver al editor';
             this.updatePreview();
         } else {
-            this.elements.resultsPanel.classList.remove('hidden');
+            // Mostrar editor, ocultar preview
+            this.elements.editor.classList.remove('hidden');
             this.elements.previewPanel.classList.add('hidden');
-            this.elements.panelTitle.innerHTML = '<span class="material-symbols-outlined text-primary text-[24px]">auto_awesome</span> SUGERENCIAS';
-            this.elements.toggleViewText.textContent = "VISTA PREVIA";
-            this.elements.toggleViewIcon.textContent = "text_snippet"; 
+            this.elements.toggleViewIcon.textContent = 'chrome_reader_mode';
+            this.elements.toggleViewIcon.title = 'Ver vista previa';
         }
     }
 };
