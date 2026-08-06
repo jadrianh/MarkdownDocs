@@ -7,9 +7,6 @@ export const EditorView = {
         wordCount: document.getElementById('wordCount'),
         charCount: document.getElementById('charCount'),
         previewPanel: document.getElementById('previewPanel'),
-        resultsPanel: document.getElementById('resultsPanel'),
-        panelTitle: document.getElementById('panelTitle'),
-        toggleViewText: document.getElementById('toggleViewText'),
         toggleViewIcon: document.getElementById('toggleViewIcon')
     },
 
@@ -21,7 +18,20 @@ export const EditorView = {
     },
 
     updatePreview() {
-        this.elements.previewPanel.innerHTML = EditorService.parseMarkdown(this.elements.editor.value);
+        try {
+            this.elements.previewPanel.innerHTML = EditorService.parseMarkdown(this.elements.editor.value);
+        } catch (err) {
+            console.error("Error al actualizar la vista previa:", err);
+            this.elements.previewPanel.innerHTML = `
+                <div class="p-4 border border-red-300 dark:border-red-800 bg-red-50 dark:bg-red-950/40 rounded-lg text-red-700 dark:text-red-300 font-sans text-xs flex items-center gap-3">
+                    <span class="material-symbols-outlined text-[20px] text-red-500">warning</span>
+                    <div>
+                        <p class="font-semibold">Error al renderizar el documento</p>
+                        <p class="opacity-80">Revisa la sintaxis o formato del texto.</p>
+                    </div>
+                </div>
+            `;
+        }
     },
 
     toggleViewMode() {
@@ -29,18 +39,18 @@ export const EditorView = {
         state.setPreviewMode(isPreviewMode);
 
         if (isPreviewMode) {
-            this.elements.resultsPanel.classList.add('hidden');
+            // Mostrar preview, ocultar editor
+            this.elements.editor.classList.add('hidden');
             this.elements.previewPanel.classList.remove('hidden');
-            this.elements.panelTitle.innerHTML = '<span class="material-symbols-outlined text-primary text-[24px]">visibility</span> VISTA PREVIA';
-            this.elements.toggleViewText.textContent = "CORRECTOR";
-            this.elements.toggleViewIcon.textContent = "auto_awesome"; 
+            this.elements.toggleViewIcon.textContent = 'border_color';
+            this.elements.toggleViewIcon.title = 'Volver al editor';
             this.updatePreview();
         } else {
-            this.elements.resultsPanel.classList.remove('hidden');
+            // Mostrar editor, ocultar preview
+            this.elements.editor.classList.remove('hidden');
             this.elements.previewPanel.classList.add('hidden');
-            this.elements.panelTitle.innerHTML = '<span class="material-symbols-outlined text-primary text-[24px]">auto_awesome</span> SUGERENCIAS';
-            this.elements.toggleViewText.textContent = "VISTA PREVIA";
-            this.elements.toggleViewIcon.textContent = "text_snippet"; 
+            this.elements.toggleViewIcon.textContent = 'chrome_reader_mode';
+            this.elements.toggleViewIcon.title = 'Ver vista previa';
         }
     }
 };

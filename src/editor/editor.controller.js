@@ -114,7 +114,14 @@ export function initEditorController() {
     document.getElementById('btnBold')?.addEventListener('click', () => triggerEditorAction('**', '**'));
     document.getElementById('btnItalic')?.addEventListener('click', () => triggerEditorAction('*', '*'));
 
+    document.getElementById('importMdBtn')?.addEventListener('click', () => {
+        document.getElementById('importFileInput')?.click();
+    });
+
+    document.getElementById('importFileInput')?.addEventListener('change', handleFileImport);
+
     document.getElementById('downloadMdBtn')?.addEventListener('click', downloadMarkdownFile);
+    document.getElementById('downloadPdfBtn')?.addEventListener('click', downloadPdfFile);
     document.getElementById('undoBtn')?.addEventListener('click', performUndo);
     document.getElementById('redoBtn')?.addEventListener('click', performRedo);
     document.getElementById('copyBtn')?.addEventListener('click', copyText);
@@ -127,7 +134,40 @@ export function initEditorController() {
     });
 }
 
-function downloadMarkdownFile() {
+function handleFileImport(e) {
+    const file = e.target.files?.[0];
+    if (!file) return;
+
+    const fileName = file.name.toLowerCase();
+    if (!fileName.endsWith('.md') && !fileName.endsWith('.markdown')) {
+        ToastView.show("Por favor selecciona un archivo Markdown (.md)", "error");
+        e.target.value = '';
+        return;
+    }
+
+    const reader = new FileReader();
+    reader.onload = (event) => {
+        const text = event.target?.result;
+        if (typeof text === 'string') {
+            const { editor } = EditorView.elements;
+            editor.value = text;
+            state.history.push(text);
+            EditorView.updateCounters();
+            if (state.isPreviewMode) EditorView.updatePreview();
+            ToastView.show(`Archivo "${file.name}" importado`, "success");
+        }
+        e.target.value = '';
+    };
+
+    reader.onerror = () => {
+        ToastView.show("Error al leer el archivo", "error");
+        e.target.value = '';
+    };
+
+    reader.readAsText(file);
+}
+
+async function downloadMarkdownFile() {
     const { editor } = EditorView.elements;
     const content = editor.value;
 
@@ -136,8 +176,30 @@ function downloadMarkdownFile() {
         return;
     }
 
-    const downloadedName = EditorService.downloadMarkdown(content);
-    ToastView.show(`Descargado (${downloadedName})`, "success");
+    const downloadedName = await EditorService.downloadMarkdown(content);
+    if (downloadedName) {
+        ToastView.show(`Guardado (${downloadedName})`, "success");
+    }
+}
+
+function downloadPdfFile() {
+    const { editor, previewPanel } = EditorView.elements;
+    const content = editor.value;
+
+    if (!content || !content.trim()) {
+        ToastView.show("El editor está vacío", "info");
+        return;
+    }
+
+    // Asegurar que el contenido renderizado esté actualizado
+    EditorView.updatePreview();
+
+    const title = EditorService.downloadPdf(content, previewPanel);
+    if (title) {
+        ToastView.show(`Generando PDF (${title})`, "success");
+    } else {
+        ToastView.show("No se pudo abrir la ventana de impresión", "error");
+    }
 }
 
 function closeAllDropdowns() {
@@ -197,6 +259,7 @@ function performUndo() {
     if (prev !== null) { 
         EditorView.elements.editor.value = prev; 
         EditorView.updateCounters();
+        if (state.isPreviewMode) EditorView.updatePreview();
     }
 }
 
@@ -205,6 +268,7 @@ function performRedo() {
     if (next !== null) { 
         EditorView.elements.editor.value = next; 
         EditorView.updateCounters();
+        if (state.isPreviewMode) EditorView.updatePreview();
     }
 }
 
@@ -216,6 +280,7 @@ function copyText() {
 function clearEditor() {
     EditorView.elements.editor.value = '';
     EditorView.updateCounters();
+    if (state.isPreviewMode) EditorView.updatePreview();
     state.history.push('');
     ToastView.show("Contenido eliminado", "info");
 }

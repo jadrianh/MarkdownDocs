@@ -19,9 +19,11 @@
 
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-  <link href="https://fonts.googleapis.com/css2?family=Hanken+Grotesk:wght@400;500;600;700&family=JetBrains+Mono:wght@400;500;600;700&family=Material+Symbols+Outlined:opsz,wght,FILL,GRAD@20..48,100..700,0..1,-50..200&display=swap" rel="stylesheet" />
+  <link href="https://fonts.googleapis.com/css2?family=Hanken+Grotesk:wght@400;500;600;700&family=JetBrains+Mono:wght@400;500;600;700&family=Inter:wght@400;500;600&family=Merriweather:wght@400;700&family=Lato:wght@400;700&family=Source+Code+Pro:wght@400;500&family=Fira+Code:wght@400;500&family=Material+Symbols+Outlined:opsz,wght,FILL,GRAD@20..48,100..700,0..1,-50..200&display=swap" rel="stylesheet" />
 
   <script src="https://cdn.tailwindcss.com?plugins=forms,typography,container-queries"></script>
+  <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/katex@0.16.11/dist/katex.min.css">
+  <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/prismjs@1.29.0/themes/prism-tomorrow.min.css">
   <link rel="stylesheet" href="src/style.css">
   <script>
     tailwind.config = {
@@ -68,7 +70,7 @@
   <div id="toast-container" class="fixed bottom-6 right-6 z-[100] flex flex-col gap-2 pointer-events-none font-mono text-xs"></div>
 
   <!-- Attribution -->
-  <div class="fixed bottom-16 left-3 text-[10px] font-mono text-zinc-400 dark:text-zinc-500 pointer-events-none z-10">
+  <div class="fixed bottom-4 left-4 text-[10px] font-mono text-zinc-400 dark:text-zinc-500 pointer-events-none z-10">
     Made By: Adrian H.
   </div>
 
@@ -86,19 +88,42 @@
     </div>
     <!-- Actions -->
     <div class="flex items-center gap-2 text-sm font-medium">
-      <button id="toggleViewBtn" aria-label="Cambiar vista"
+      <input type="file" id="importFileInput" accept=".md,.markdown,text/markdown" class="hidden" />
+
+      <button id="importMdBtn" aria-label="Importar archivo Markdown (.md)"
         class="flex items-center justify-center gap-2 px-3.5 py-1.5 text-zinc-600 dark:text-zinc-300 hover:text-zinc-900 dark:hover:text-zinc-100 hover:bg-zinc-100 dark:hover:bg-zinc-700 rounded-sm transition-colors"
-        title="Cambiar vista">
-        <span id="toggleViewIcon" class="material-symbols-outlined text-[20px]">text_snippet</span>
-        <span id="toggleViewText" class="text-xs font-semibold tracking-wide">VISTA PREVIA</span>
+        title="Importar archivo Markdown (.md)">
+        <span class="material-symbols-outlined text-[21px] text-primary">file_save</span>
+        <span class="text-xs font-semibold">IMPORTAR</span>
       </button>
 
-      <button id="downloadMdBtn" aria-label="Descargar archivo Markdown (.md)"
-        class="flex items-center justify-center gap-2 px-3.5 py-1.5 text-zinc-600 dark:text-zinc-300 hover:text-zinc-900 dark:hover:text-zinc-100 hover:bg-zinc-100 dark:hover:bg-zinc-700 rounded-sm transition-colors"
-        title="Descargar archivo Markdown (.md)">
-        <span class="material-symbols-outlined text-[20px] text-primary">download</span>
-        <span class="text-xs font-semibold">DESCARGAR</span>
-      </button>
+      <!-- Download Dropdown -->
+      <div class="relative dropdown-container">
+        <button id="btnDownloadDropdown" aria-label="Opciones de descarga"
+          class="dropdown-trigger flex items-center justify-center gap-1 px-3.5 py-1.5 text-zinc-600 dark:text-zinc-300 hover:text-zinc-900 dark:hover:text-zinc-100 hover:bg-zinc-100 dark:hover:bg-zinc-700 rounded-sm transition-colors"
+          title="Exportar documento">
+          <span class="material-symbols-outlined text-[21px] text-primary">file_export</span>
+          <span class="text-xs font-semibold uppercase">Exportar</span>
+          <span class="material-symbols-outlined text-[16px] text-zinc-400">arrow_drop_down</span>
+        </button>
+        <div id="menuDownload"
+          class="dropdown-menu hidden absolute top-full left-0 mt-1 z-50 w-48 bg-white dark:bg-zinc-800 border border-zinc-200/80 dark:border-zinc-700/80 rounded shadow-xl py-1 font-mono text-xs text-zinc-700 dark:text-zinc-200">
+          <button id="downloadMdBtn" class="dropdown-item w-full flex items-center gap-2.5 px-3 py-2 hover:bg-zinc-100 dark:hover:bg-zinc-700/60 transition-colors text-left">
+            <span class="material-symbols-outlined text-[18px] text-primary">description</span>
+            <div class="flex flex-col">
+              <span class="font-sans font-semibold text-xs text-zinc-800 dark:text-zinc-100">Markdown (.md)</span>
+              <span class="text-[10px] text-zinc-400 font-mono">Texto plano</span>
+            </div>
+          </button>
+          <button id="downloadPdfBtn" class="dropdown-item w-full flex items-center gap-2.5 px-3 py-2 hover:bg-zinc-100 dark:hover:bg-zinc-700/60 transition-colors text-left">
+            <span class="material-symbols-outlined text-[18px] text-red-500">picture_as_pdf</span>
+            <div class="flex flex-col">
+              <span class="font-sans font-semibold text-xs text-zinc-800 dark:text-zinc-100">Documento PDF</span>
+              <span class="text-[10px] text-zinc-400 font-mono">Con estilo preview</span>
+            </div>
+          </button>
+        </div>
+      </div>
 
       <div class="w-px h-4 bg-zinc-200 dark:bg-zinc-700 mx-1"></div>
 
@@ -130,7 +155,7 @@
             <button id="btnTextStyles" aria-label="Estilos de texto"
               class="dropdown-trigger flex items-center justify-center gap-0.5 px-1.5 h-8 hover:bg-zinc-200/60 dark:hover:bg-zinc-700 rounded-sm transition-colors text-zinc-700 dark:text-zinc-300"
               title="Estilos de texto">
-              <span class="material-symbols-outlined text-[24px]">title</span>
+              <span class="material-symbols-outlined text-[24px]">text_fields</span>
               <span class="material-symbols-outlined text-[16px] text-zinc-400">arrow_drop_down</span>
             </button>
             <div id="menuTextStyles"
@@ -290,7 +315,6 @@
             <button id="btnLanguage" aria-label="Seleccionar idioma de corrección"
               class="dropdown-trigger flex items-center justify-center gap-1.5 px-2 h-8 hover:bg-zinc-200/60 dark:hover:bg-zinc-700 rounded-sm transition-colors text-zinc-600 dark:text-zinc-300 font-mono text-xs"
               title="Idioma de corrección">
-              <span class="material-symbols-outlined text-[20px]">translate</span>
               <span id="currentLangText" class="font-medium uppercase text-xs tracking-wide">ESPAÑOL</span>
               <span class="material-symbols-outlined text-[16px] text-zinc-400">arrow_drop_down</span>
             </button>
@@ -403,6 +427,15 @@
               </button>
             </div>
           </div>
+          <!-- Editor/Preview Toggle Button -->
+          <button id="toggleViewBtn" aria-label="Alternar entre editor y vista previa"
+            class="flex items-center justify-center w-8 h-8 hover:bg-zinc-200/60 dark:hover:bg-zinc-700 rounded-sm transition-colors text-zinc-600 dark:text-zinc-300"
+            title="Alternar editor / vista previa">
+            <span id="toggleViewIcon" class="material-symbols-outlined text-[22px]">chrome_reader_mode</span>
+          </button>
+
+          <div class="w-px h-8 bg-zinc-200 dark:bg-zinc-700 mx-0.5"></div>
+
           <!-- History & Clipboard -->
           <div class="flex items-center gap-1 pl-1">
             <button id="undoBtn" aria-label="Deshacer"
@@ -421,20 +454,27 @@
         </div>
       </div>
 
-      <!-- Editor Textarea -->
-      <div class="flex-1 relative">
+      <!-- Editor / Preview Area -->
+      <div class="flex-1 relative overflow-hidden">
+        <!-- Editor Textarea -->
         <textarea id="editor"
-          class="w-full h-full p-6 resize-none outline-none border-none focus:ring-0 text-base font-mono leading-relaxed text-zinc-800 dark:text-zinc-100 placeholder-zinc-400 dark:placeholder-zinc-500 bg-transparent custom-scrollbar"
+          class="absolute inset-0 w-full h-full p-6 resize-none outline-none border-none focus:ring-0 text-base font-mono leading-relaxed text-zinc-800 dark:text-zinc-100 placeholder-zinc-400 dark:placeholder-zinc-500 bg-transparent custom-scrollbar"
           placeholder="Comienza a escribir..." spellcheck="false"></textarea>
+
+        <!-- Preview Panel (comparte espacio con el editor) -->
+        <div id="previewPanel"
+          class="hidden absolute inset-0 overflow-y-auto p-6 custom-scrollbar prose dark:prose-invert prose-sm max-w-none font-sans leading-relaxed text-zinc-800 dark:text-zinc-200 bg-white dark:bg-zinc-900">
+        </div>
       </div>
 
       <!-- Footer Bar -->
-      <div class="flex items-center justify-between px-4 py-2 border-t border-zinc-200/60 dark:border-zinc-700/50 bg-zinc-50/50 dark:bg-zinc-800/50 shrink-0 text-xs font-mono text-zinc-500 dark:text-zinc-400">
+      <div class="flex w-full items-center justify-end gap-4 px-4 py-2 border-t border-zinc-200/60 dark:border-zinc-700/50 bg-zinc-50/50 dark:bg-zinc-800/50 shrink-0 text-xs font-mono text-zinc-500 dark:text-zinc-400">
         <button id="exampleBtn" aria-label="Insertar ejemplo de texto"
           class="flex items-center gap-2 text-primary hover:text-primary/80 transition-colors font-sans font-medium px-2 py-1 rounded-sm hover:bg-primary/10">
           <span class="material-symbols-outlined text-[22px]">format_quote</span>
           Ejemplo de texto
         </button>
+
         <div class="flex gap-4">
           <span id="wordCount">0 PALABRAS</span>
           <span id="charCount">0 CARACTERES</span>
@@ -447,8 +487,7 @@
     <aside class="w-80 flex flex-col bg-zinc-50 dark:bg-zinc-800 shrink-0 border-l border-zinc-200/60 dark:border-zinc-700/50" data-purpose="suggestions-sidebar">
       <!-- Sidebar Header -->
       <div class="flex items-center gap-2 px-4 py-3 border-b border-zinc-200/60 dark:border-zinc-700/50 h-10 shrink-0 bg-white dark:bg-zinc-800">
-        <h2 id="panelTitle"
-          class="text-xs font-bold tracking-wider text-zinc-700 dark:text-zinc-300 flex items-center gap-2 uppercase">
+        <h2 class="text-xs font-bold tracking-wider text-zinc-700 dark:text-zinc-300 flex items-center gap-2 uppercase">
           <span class="material-symbols-outlined text-primary text-[24px]">auto_awesome</span>
           SUGERENCIAS
         </h2>
@@ -462,11 +501,6 @@
           </div>
           <p class="text-xs font-mono text-zinc-400 dark:text-zinc-500 tracking-wide uppercase">Esperando texto...</p>
         </div>
-      </div>
-
-      <!-- Preview Panel -->
-      <div id="previewPanel"
-        class="hidden flex-1 overflow-y-auto p-6 custom-scrollbar prose dark:prose-invert prose-sm max-w-none font-sans leading-relaxed text-zinc-800 dark:text-zinc-200">
       </div>
     </aside>
     <!-- END: Suggestions Sidebar -->
@@ -527,6 +561,86 @@
                   data-color="245 158 11"></button>
                 <button class="color-btn w-6 h-6 rounded-full bg-[#f43f5e] hover:scale-110 transition-transform cursor-pointer"
                   data-color="244 63 94"></button>
+              </div>
+            </div>
+          </div>
+        </section>
+
+        <!-- Typography: Editor Section -->
+        <section>
+          <h3 class="text-zinc-400 dark:text-zinc-500 uppercase tracking-widest mb-4 border-b border-zinc-200 dark:border-zinc-800 pb-2 text-[11px] font-semibold flex items-center gap-2">
+            <span class="material-symbols-outlined text-[16px]">edit_note</span>
+            Tipografía · Editor
+          </h3>
+          <div class="flex flex-col gap-4">
+            <!-- Editor Font Family -->
+            <div class="flex flex-col gap-2">
+              <label class="text-zinc-600 dark:text-zinc-400" for="editorFontFamily">Fuente del Editor</label>
+              <div class="relative">
+                <select id="editorFontFamily"
+                  class="pref-select w-full appearance-none bg-zinc-100 dark:bg-zinc-800/50 border border-zinc-200 dark:border-zinc-700 rounded px-3 py-2 pr-8 font-mono text-[12px] text-zinc-700 dark:text-zinc-200 cursor-pointer focus:outline-none focus:ring-1 focus:ring-primary/50 transition-colors">
+                  <option value="'JetBrains Mono', monospace">JetBrains Mono</option>
+                  <option value="'Source Code Pro', monospace">Source Code Pro</option>
+                  <option value="'Fira Code', monospace">Fira Code</option>
+                  <option value="ui-monospace, monospace">Monospace (sistema)</option>
+                  <option value="'Hanken Grotesk', sans-serif">Hanken Grotesk</option>
+                  <option value="'Inter', sans-serif">Inter</option>
+                  <option value="'Lato', sans-serif">Lato</option>
+                </select>
+                <span class="material-symbols-outlined text-[16px] text-zinc-400 absolute right-2 top-1/2 -translate-y-1/2 pointer-events-none">arrow_drop_down</span>
+              </div>
+            </div>
+            <!-- Editor Font Size -->
+            <div class="flex flex-col gap-2">
+              <div class="flex items-center justify-between">
+                <label class="text-zinc-600 dark:text-zinc-400" for="editorFontSize">Tamaño de Fuente</label>
+                <span id="editorFontSizeValue" class="text-primary font-semibold tabular-nums">14px</span>
+              </div>
+              <div class="flex items-center gap-3">
+                <span class="text-zinc-400 text-[10px]">10</span>
+                <input id="editorFontSize" type="range" min="10" max="24" step="1" value="14"
+                  class="pref-range flex-1 h-1.5 rounded-full appearance-none cursor-pointer accent-primary bg-zinc-200 dark:bg-zinc-700" />
+                <span class="text-zinc-400 text-[10px]">24</span>
+              </div>
+            </div>
+          </div>
+        </section>
+
+        <!-- Typography: Preview Section -->
+        <section>
+          <h3 class="text-zinc-400 dark:text-zinc-500 uppercase tracking-widest mb-4 border-b border-zinc-200 dark:border-zinc-800 pb-2 text-[11px] font-semibold flex items-center gap-2">
+            <span class="material-symbols-outlined text-[16px]">chrome_reader_mode</span>
+            Tipografía · Vista Previa
+          </h3>
+          <div class="flex flex-col gap-4">
+            <!-- Preview Font Family -->
+            <div class="flex flex-col gap-2">
+              <label class="text-zinc-600 dark:text-zinc-400" for="previewFontFamily">Fuente de la Vista Previa</label>
+              <div class="relative">
+                <select id="previewFontFamily"
+                  class="pref-select w-full appearance-none bg-zinc-100 dark:bg-zinc-800/50 border border-zinc-200 dark:border-zinc-700 rounded px-3 py-2 pr-8 font-mono text-[12px] text-zinc-700 dark:text-zinc-200 cursor-pointer focus:outline-none focus:ring-1 focus:ring-primary/50 transition-colors">
+                  <option value="'Hanken Grotesk', sans-serif">Hanken Grotesk</option>
+                  <option value="'Inter', sans-serif">Inter</option>
+                  <option value="'Lato', sans-serif">Lato</option>
+                  <option value="'Merriweather', serif">Merriweather</option>
+                  <option value="ui-serif, serif">Serif (sistema)</option>
+                  <option value="'JetBrains Mono', monospace">JetBrains Mono</option>
+                  <option value="'Source Code Pro', monospace">Source Code Pro</option>
+                </select>
+                <span class="material-symbols-outlined text-[16px] text-zinc-400 absolute right-2 top-1/2 -translate-y-1/2 pointer-events-none">arrow_drop_down</span>
+              </div>
+            </div>
+            <!-- Preview Font Size -->
+            <div class="flex flex-col gap-2">
+              <div class="flex items-center justify-between">
+                <label class="text-zinc-600 dark:text-zinc-400" for="previewFontSize">Tamaño de Fuente</label>
+                <span id="previewFontSizeValue" class="text-primary font-semibold tabular-nums">15px</span>
+              </div>
+              <div class="flex items-center gap-3">
+                <span class="text-zinc-400 text-[10px]">10</span>
+                <input id="previewFontSize" type="range" min="10" max="24" step="1" value="15"
+                  class="pref-range flex-1 h-1.5 rounded-full appearance-none cursor-pointer accent-primary bg-zinc-200 dark:bg-zinc-700" />
+                <span class="text-zinc-400 text-[10px]">24</span>
               </div>
             </div>
           </div>
