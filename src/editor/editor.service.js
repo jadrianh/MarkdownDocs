@@ -29,7 +29,7 @@ markedInstance.use({
         },
         code({ text, lang }) {
             const validLang = lang && Prism.languages[lang] ? lang : null;
-            let highlighted = text;
+            let highlighted;
             if (validLang) {
                 try {
                     highlighted = Prism.highlight(text, Prism.languages[validLang], validLang);
@@ -90,7 +90,7 @@ export const EditorService = {
         // Verificar si ya está formateado (para quitar el estilo al volver a hacer clic)
         const isFormatted = trimmedSelection.startsWith(prefix) && trimmedSelection.endsWith(suffix) && trimmedSelection.length >= prefix.length + suffix.length;
 
-        let formattedCore = '';
+        let formattedCore;
         if (isFormatted) {
             formattedCore = trimmedSelection.substring(prefix.length, trimmedSelection.length - suffix.length);
         } else {

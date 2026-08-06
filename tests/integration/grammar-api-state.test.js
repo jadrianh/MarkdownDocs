@@ -119,7 +119,7 @@ describe('Grammar API → State Integration', () => {
     const data = await LanguageToolAPI.check('Hola mundo fixed', 'es');
     state.setMatches(data.matches);
 
-    [...data.matches].forEach((_, i) => state.removeMatch(0));
+    [...data.matches].forEach(() => state.removeMatch(0));
     expect(state.currentMatches).toHaveLength(0);
   });
 });
