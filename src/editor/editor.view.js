@@ -18,7 +18,20 @@ export const EditorView = {
     },
 
     updatePreview() {
-        this.elements.previewPanel.innerHTML = EditorService.parseMarkdown(this.elements.editor.value);
+        try {
+            this.elements.previewPanel.innerHTML = EditorService.parseMarkdown(this.elements.editor.value);
+        } catch (err) {
+            console.error("Error al actualizar la vista previa:", err);
+            this.elements.previewPanel.innerHTML = `
+                <div class="p-4 border border-red-300 dark:border-red-800 bg-red-50 dark:bg-red-950/40 rounded-lg text-red-700 dark:text-red-300 font-sans text-xs flex items-center gap-3">
+                    <span class="material-symbols-outlined text-[20px] text-red-500">warning</span>
+                    <div>
+                        <p class="font-semibold">Error al renderizar el documento</p>
+                        <p class="opacity-80">Revisa la sintaxis o formato del texto.</p>
+                    </div>
+                </div>
+            `;
+        }
     },
 
     toggleViewMode() {

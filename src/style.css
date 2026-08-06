@@ -1,7 +1,7 @@
 /* --- Variables CSS Dinámicas y Transiciones --- */
 :root {
     --primary-rgb: 99 102 241;
-    --theme-transition-duration: 0.3s;
+    --theme-transition-duration: 0.2s;
     --theme-transition-timing: ease-out;
 }
 
@@ -101,9 +101,63 @@ textarea::-webkit-scrollbar-thumb {
     background-color: #3f3f46;
 }
 
+/* --- Preview Panel Styles --- */
+#previewPanel {
+    white-space: normal;
+    word-break: break-word;
+}
+#previewPanel ul {
+    list-style-type: disc;
+    padding-left: 1.5rem;
+    margin-top: 0.5rem;
+    margin-bottom: 0.5rem;
+}
+#previewPanel li.task-list-item,
+#previewPanel ul li.task-list-item {
+    list-style-type: none !important;
+    list-style: none !important;
+}
+#previewPanel ol {
+    list-style-type: decimal;
+    padding-left: 1.5rem;
+    margin-top: 0.5rem;
+    margin-bottom: 0.5rem;
+}
+#previewPanel table {
+    width: 100%;
+    border-collapse: collapse;
+    margin-top: 1rem;
+    margin-bottom: 1rem;
+}
+#previewPanel th, #previewPanel td {
+    border: 1px solid #e4e4e7;
+    padding: 0.5rem 0.75rem;
+}
+html.dark #previewPanel th, html.dark #previewPanel td {
+    border-color: #3f3f46;
+}
+#previewPanel th {
+    background-color: rgba(0, 0, 0, 0.04);
+}
+html.dark #previewPanel th {
+    background-color: rgba(255, 255, 255, 0.04);
+}
+
 /* --- Utilidades del Modal Rápido y Fluido --- */
+#themeModalContent {
+    transition: 
+        background-color var(--theme-transition-duration) var(--theme-transition-timing),
+        color var(--theme-transition-duration) var(--theme-transition-timing),
+        border-color var(--theme-transition-duration) var(--theme-transition-timing),
+        transform var(--theme-transition-duration) var(--theme-transition-timing),
+        opacity var(--theme-transition-duration) var(--theme-transition-timing);
+}
+
 .theme-option-btn {
-    transition: background-color 0.15s ease, color 0.15s ease, border-color 0.15s ease;
+    transition: 
+        background-color var(--theme-transition-duration) var(--theme-transition-timing), 
+        color var(--theme-transition-duration) var(--theme-transition-timing), 
+        border-color var(--theme-transition-duration) var(--theme-transition-timing);
 }
 .theme-option-btn.active {
     background-color: #ffffff;
@@ -120,7 +174,9 @@ html.dark .theme-option-btn.active {
 
 .color-btn {
     border: 2px solid transparent;
-    transition: transform 0.15s cubic-bezier(0.34, 1.56, 0.64, 1), box-shadow 0.15s ease;
+    transition: 
+        transform var(--theme-transition-duration) cubic-bezier(0.34, 1.56, 0.64, 1), 
+        box-shadow var(--theme-transition-duration) var(--theme-transition-timing);
     will-change: transform;
 }
 .color-btn:hover {
@@ -136,7 +192,11 @@ html.dark .color-btn.active {
 
 /* --- Controles de Tipografía en Modal de Preferencias --- */
 .pref-select {
-    transition: border-color 0.15s ease, box-shadow 0.15s ease;
+    transition: 
+        background-color var(--theme-transition-duration) var(--theme-transition-timing),
+        color var(--theme-transition-duration) var(--theme-transition-timing),
+        border-color var(--theme-transition-duration) var(--theme-transition-timing), 
+        box-shadow var(--theme-transition-duration) var(--theme-transition-timing);
 }
 .pref-select:hover {
     border-color: rgb(var(--primary-rgb) / 0.5);
@@ -151,7 +211,7 @@ html.dark .color-btn.active {
         #d4d4d8 var(--range-pct, 50%),
         #d4d4d8 100%
     );
-    transition: background 0.1s ease;
+    transition: background var(--theme-transition-duration) var(--theme-transition-timing);
 }
 html.dark .pref-range {
     background: linear-gradient(
@@ -172,7 +232,9 @@ html.dark .pref-range {
     cursor: pointer;
     border: 2px solid white;
     box-shadow: 0 0 0 1px rgb(var(--primary-rgb) / 0.4), 0 1px 4px rgba(0,0,0,0.2);
-    transition: transform 0.15s cubic-bezier(0.34, 1.56, 0.64, 1), box-shadow 0.15s ease;
+    transition: 
+        transform var(--theme-transition-duration) cubic-bezier(0.34, 1.56, 0.64, 1), 
+        box-shadow var(--theme-transition-duration) var(--theme-transition-timing);
 }
 .pref-range::-webkit-slider-thumb:hover,
 .pref-range::-webkit-slider-thumb:active {
@@ -190,4 +252,7 @@ html.dark .pref-range::-webkit-slider-thumb {
     cursor: pointer;
     border: 2px solid white;
     box-shadow: 0 0 0 1px rgb(var(--primary-rgb) / 0.4);
-}
+    transition: 
+        transform var(--theme-transition-duration) cubic-bezier(0.34, 1.56, 0.64, 1), 
+        box-shadow var(--theme-transition-duration) var(--theme-transition-timing);
+}

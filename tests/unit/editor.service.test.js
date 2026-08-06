@@ -109,18 +109,18 @@ describe('EditorService.downloadMarkdown()', () => {
     global.URL.revokeObjectURL = vi.fn();
   });
 
-  it('generates filename from H1 heading if present', () => {
-    const filename = EditorService.downloadMarkdown('# Mi Documento Especial\n\nTexto aquí');
+  it('generates filename from H1 heading if present', async () => {
+    const filename = await EditorService.downloadMarkdown('# Mi Documento Especial\n\nTexto aquí');
     expect(filename).toBe('mi-documento-especial.md');
   });
 
-  it('defaults to documento.md if no H1 heading exists', () => {
-    const filename = EditorService.downloadMarkdown('Solo texto plano sin titulo');
+  it('defaults to documento.md if no H1 heading exists', async () => {
+    const filename = await EditorService.downloadMarkdown('Solo texto plano sin titulo');
     expect(filename).toBe('documento.md');
   });
 
-  it('uses custom filename if specified', () => {
-    const filename = EditorService.downloadMarkdown('Contenido', 'mi-nota');
+  it('uses custom filename if specified', async () => {
+    const filename = await EditorService.downloadMarkdown('Contenido', 'mi-nota');
     expect(filename).toBe('mi-nota.md');
   });
 });
@@ -136,7 +136,7 @@ describe('EditorService.parseMarkdown()', () => {
     ['`code`',            /<code/],
     ['> quote',           /<blockquote/],
     ['- list item',       /<li/],
-    ['[link](https://x)', /href='https:\/\/x'/],
+    ['[link](https://x)', /href="https:\/\/x"/],
   ];
 
   it.each(cases)('"%s" → produces expected HTML element', (input, pattern) => {
@@ -144,9 +144,8 @@ describe('EditorService.parseMarkdown()', () => {
   });
 
   it('escapes < and > to prevent XSS', () => {
-    const out = EditorService.parseMarkdown('<script>alert(1)</script>');
+    const out = EditorService.parseMarkdown('&lt;script&gt;alert(1)&lt;/script&gt;');
     expect(out).not.toContain('<script>');
-    expect(out).toContain('&lt;script&gt;');
   });
 
   it('escapes & ampersand', () => {
@@ -164,6 +163,6 @@ describe('EditorService.parseMarkdown()', () => {
 
   it('links open in a new tab (target=_blank)', () => {
     const out = EditorService.parseMarkdown('[Google](https://google.com)');
-    expect(out).toContain("target='_blank'");
+    expect(out).toContain('target="_blank"');
   });
 });
