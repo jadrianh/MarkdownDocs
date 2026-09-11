@@ -1,0 +1,1012 @@
+@import "tailwindcss";
+@plugin "@tailwindcss/forms";
+@plugin "@tailwindcss/typography";
+@plugin "@tailwindcss/container-queries";
+
+/* Antes cargados por CDN en index.html (jsdelivr) — ahora vienen del propio
+   bundle de Vite, con la MISMA versión que usa editor.service.js. Esto es lo
+   que elimina la segunda fuente del "flash": ya no hay una petición externa
+   más que competir con el primer render. */
+@import "katex/dist/katex.min.css";
+@import "prismjs/themes/prism-tomorrow.css";
+
+/* Migrado 1:1 desde el `tailwind.config` embebido que vivía en index.html.
+   En v4 la configuración de theme se declara en CSS, no en JS. */
+@theme {
+  --color-surface-container-low: #1b1b1e;
+  --color-surface-container-high: #2a2a2d;
+  --color-background: #131316;
+  --color-on-background: #e4e1e6;
+  --color-surface-container-highest: #353438;
+  --color-inverse-surface: #e4e1e6;
+  --color-surface-dim: #131316;
+  --color-surface-container: #1f1f22;
+  --color-outline-variant: #464554;
+  --color-surface-variant: #353438;
+  --color-surface-container-lowest: #0e0e11;
+  --color-inverse-primary: #494bd6;
+  --color-surface-tint: #c0c1ff;
+  --color-on-surface-variant: #c7c4d7;
+  --color-on-surface: #e4e1e6;
+  --color-primary: rgb(var(--primary-rgb) / <alpha-value>);
+  --color-on-primary: var(--on-primary);
+  --color-secondary: #10b981;
+  --color-brand: #4f46e5;
+  --color-brand-hover: #4338ca;
+
+  --font-sans: "Hanken Grotesk", Inter, ui-sans-serif, system-ui, sans-serif;
+  --font-mono: "JetBrains Mono", ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, monospace;
+  --font-display: "Hanken Grotesk", Inter, sans-serif;
+}
+
+@custom-variant dark (&:where(.dark, .dark *));
+
+:root {
+  --primary-rgb: 79 70 229; /* Indigo 600 - Cumple WCAG AA (>4.5:1) con texto blanco */
+  --on-primary: #ffffff;
+}
+
+/* Iconos de Material Symbols con relleno sólido (Filled) */
+.material-symbols-outlined {
+  font-variation-settings: 'FILL' 1, 'wght' 400, 'GRAD' 0, 'opsz' 24 !important;
+}
+
+/*
+ * Reemplaza la vieja ventana emergente de downloadPdf() (ver editor.service.js).
+ * Patrón estándar: oculta todo por visibilidad, muestra solo #previewPanel,
+ * y fuerza su display por si estaba oculto (clase `hidden` de Tailwind) porque
+ * el usuario exportó a PDF sin haber cambiado a modo de vista previa.
+ */
+@media print {
+  body * {
+    visibility: hidden;
+  }
+
+  #previewPanel,
+  #previewPanel * {
+    visibility: visible;
+  }
+
+  #previewPanel {
+    display: block !important;
+    position: absolute;
+    inset: 0;
+    padding: 2rem;
+    background: #ffffff;
+    color: #18181b;
+  }
+}
+
+/* ==========================================================================
+   Modo OLED Negro (Black Mode)
+   ========================================================================== */
+html.black-mode body {
+  background-color: #000000 !important;
+  color: #f4f4f5 !important;
+}
+
+html.black-mode header,
+html.black-mode [data-purpose="suggestions-sidebar"],
+html.black-mode [data-purpose="suggestions-sidebar"] > div:first-child,
+html.black-mode [data-purpose="editor-section"] > div:first-child,
+html.black-mode [data-purpose="editor-section"] > div:last-child {
+  background-color: #0e0e11 !important;
+  border-color: #27272a !important;
+}
+
+html.black-mode [data-purpose="editor-section"] {
+  background-color: #000000 !important;
+  border-color: #27272a !important;
+}
+
+html.black-mode #editor,
+html.black-mode #previewPanel {
+  background-color: #000000 !important;
+  color: #f4f4f5 !important;
+}
+
+html.black-mode .dropdown-menu,
+html.black-mode #themeModalContent {
+  background-color: #0e0e11 !important;
+  border-color: #27272a !important;
+}
+
+html.black-mode [data-purpose="pref-sidebar"] {
+  background-color: #0e0e11 !important;
+  border-color: #27272a !important;
+}
+
+html.black-mode .pref-page-panel {
+  background-color: #0e0e11 !important;
+}
+
+html.black-mode #themeModalContent > div:first-child,
+html.black-mode #themeModalContent section > h3 {
+  border-color: #27272a !important;
+}
+
+html.black-mode .pref-select {
+  background-color: #18181b !important;
+  border-color: #27272a !important;
+  color: #f4f4f5 !important;
+}
+
+html.black-mode .dropdown-item:hover,
+html.black-mode .dropdown-lang-item:hover {
+  background-color: rgb(var(--primary-rgb) / 0.12) !important;
+}
+
+html.black-mode header .w-px {
+  background-color: #27272a !important;
+}
+
+html.black-mode .header-nav-btn:hover {
+  background-color: rgb(var(--primary-rgb) / 0.18) !important;
+}
+
+html.black-mode #themeAccentIndicator {
+  --tw-ring-color: #0e0e11 !important;
+}
+
+html.black-mode .suggestion-card {
+  background-color: #0e0e11 !important;
+  border-color: #27272a !important;
+}
+
+html.black-mode .suggestion-context {
+  background-color: #18181b !important;
+  border-color: #27272a !important;
+}
+
+/* ==========================================================================
+   Top Navigation Bar: Dinamismo, Contraste y Colores de Acento
+   ========================================================================== */
+
+/* Logo Badge con contraste dinámico y brillo ambiental temático */
+.logo-badge {
+  background-color: rgb(var(--primary-rgb));
+  color: var(--on-primary);
+  transition: background-color 0.2s ease, color 0.2s ease, box-shadow 0.2s ease;
+}
+
+/* Botones de navegación del encabezado con estados interactivos adaptativos */
+.header-nav-btn {
+  transition: background-color 0.15s ease, color 0.15s ease, box-shadow 0.15s ease;
+}
+
+.header-nav-btn:hover {
+  background-color: rgb(var(--primary-rgb) / 0.1);
+  color: rgb(var(--primary-rgb));
+}
+
+.header-nav-btn:hover .material-symbols-outlined {
+  color: rgb(var(--primary-rgb));
+}
+
+/* Estado activo / abierto para menús desplegables del encabezado */
+.header-nav-btn[aria-expanded="true"] {
+  background-color: rgb(var(--primary-rgb) / 0.16);
+  color: rgb(var(--primary-rgb));
+  box-shadow: inset 0 0 0 1px rgb(var(--primary-rgb) / 0.3);
+}
+
+.header-nav-btn[aria-expanded="true"] .material-symbols-outlined {
+  color: rgb(var(--primary-rgb));
+}
+
+/* Indicador de color de acento activo en el botón de ajustes */
+#themeAccentIndicator {
+  box-shadow: 0 0 6px rgb(var(--primary-rgb) / 0.6);
+  transition: background-color 0.25s ease, box-shadow 0.25s ease;
+}
+
+/* Botón principal de análisis */
+#analyzeBtn {
+  background-color: rgb(var(--primary-rgb));
+  color: var(--on-primary);
+  box-shadow: 0 1px 2px 0 rgb(0 0 0 / 0.08);
+  transition: all 0.2s cubic-bezier(0.4, 0, 0.2, 1);
+}
+
+#analyzeBtn:hover:not(:disabled) {
+  opacity: 0.92;
+  transform: translateY(-1px);
+  box-shadow: 0 4px 12px -2px rgb(0 0 0 / 0.15), 0 2px 4px -2px rgb(0 0 0 / 0.1);
+}
+
+.dark #analyzeBtn:hover:not(:disabled) {
+  opacity: 0.94;
+  box-shadow: 0 4px 14px -2px rgb(0 0 0 / 0.5), 0 0 0 1px rgb(255 255 255 / 0.08);
+}
+
+html.black-mode #analyzeBtn:hover:not(:disabled) {
+  opacity: 0.95;
+  box-shadow: 0 4px 16px -2px rgb(0 0 0 / 0.8), 0 0 0 1px rgb(255 255 255 / 0.12);
+}
+
+#analyzeBtn:active:not(:disabled) {
+  transform: translateY(0) scale(0.97);
+  box-shadow: 0 1px 2px 0 rgb(0 0 0 / 0.05);
+}
+
+/* Animación sutil de rotación cuando el análisis está en curso */
+#analyzeBtn.is-analyzing .material-symbols-outlined {
+  animation: spin-cw 1.1s cubic-bezier(0.4, 0, 0.2, 1) infinite;
+}
+
+@keyframes spin-cw {
+  from {
+    transform: rotate(0deg);
+  }
+  to {
+    transform: rotate(360deg);
+  }
+}
+
+/* ==========================================================================
+   Navegación Lateral y Estados en Preferencias
+   ========================================================================== */
+.pref-nav-btn {
+  position: relative;
+  transition: all 0.15s ease;
+  color: #52525b; /* zinc-600 */
+}
+
+.pref-nav-btn .material-symbols-outlined {
+  color: #a1a1aa; /* zinc-400 */
+  transition: color 0.15s ease;
+}
+
+/* Hover SOLO en pestañas inactivas */
+.pref-nav-btn:not(.active):hover,
+.pref-nav-btn:not(.active):hover span.truncate {
+  color: #18181b !important; /* zinc-900 */
+}
+
+.pref-nav-btn:not(.active):hover .material-symbols-outlined {
+  color: #3f3f46 !important; /* zinc-700 */
+}
+
+.dark .pref-nav-btn {
+  color: #a1a1aa; /* zinc-400 */
+}
+
+.dark .pref-nav-btn .material-symbols-outlined {
+  color: #a1a1aa; /* zinc-400 */
+}
+
+.dark .pref-nav-btn:not(.active):hover,
+.dark .pref-nav-btn:not(.active):hover span.truncate {
+  color: #f4f4f5 !important; /* zinc-100 */
+}
+
+.dark .pref-nav-btn:not(.active):hover .material-symbols-outlined {
+  color: #d4d4d8 !important; /* zinc-300 */
+}
+
+html.black-mode .pref-nav-btn:not(.active):hover,
+html.black-mode .pref-nav-btn:not(.active):hover span.truncate {
+  color: #ffffff !important;
+}
+
+html.black-mode .pref-nav-btn:not(.active):hover .material-symbols-outlined {
+  color: #e4e4e7 !important;
+}
+
+/* Pestaña Activa: siempre preserva el color primario, incluso al hacer hover */
+.pref-nav-btn.active,
+.pref-nav-btn.active:hover {
+  background-color: #ffffff;
+  color: rgb(var(--primary-rgb)) !important;
+  border-color: rgba(228, 228, 231, 0.9);
+  box-shadow: 0 1px 2px 0 rgb(0 0 0 / 0.05);
+  font-weight: 600;
+}
+
+.pref-nav-btn.active .material-symbols-outlined,
+.pref-nav-btn.active:hover .material-symbols-outlined,
+.pref-nav-btn.active span,
+.pref-nav-btn.active:hover span {
+  color: rgb(var(--primary-rgb)) !important;
+}
+
+.dark .pref-nav-btn.active,
+.dark .pref-nav-btn.active:hover {
+  background-color: #27272a !important;
+  color: rgb(var(--primary-rgb)) !important;
+  border-color: #3f3f46;
+}
+
+.dark .pref-nav-btn.active .material-symbols-outlined,
+.dark .pref-nav-btn.active:hover .material-symbols-outlined,
+.dark .pref-nav-btn.active span,
+.dark .pref-nav-btn.active:hover span {
+  color: rgb(var(--primary-rgb)) !important;
+}
+
+html.black-mode .pref-nav-btn.active,
+html.black-mode .pref-nav-btn.active:hover {
+  background-color: #18181b !important;
+  color: rgb(var(--primary-rgb)) !important;
+  border-color: #27272a !important;
+}
+
+html.black-mode .pref-nav-btn.active .material-symbols-outlined,
+html.black-mode .pref-nav-btn.active:hover .material-symbols-outlined,
+html.black-mode .pref-nav-btn.active span,
+html.black-mode .pref-nav-btn.active:hover span {
+  color: rgb(var(--primary-rgb)) !important;
+}
+
+.theme-option-btn {
+  position: relative;
+  transition: all 0.15s ease;
+}
+
+.theme-option-btn.active {
+  border-color: rgb(var(--primary-rgb)) !important;
+  background-color: rgb(var(--primary-rgb) / 0.08) !important;
+  box-shadow: 0 0 0 1px rgb(var(--primary-rgb)), 0 1px 2px 0 rgb(0 0 0 / 0.05) !important;
+  color: #18181b;
+  font-weight: 600;
+}
+
+.dark .theme-option-btn.active {
+  border-color: rgb(var(--primary-rgb)) !important;
+  background-color: rgb(var(--primary-rgb) / 0.15) !important;
+  box-shadow: 0 0 0 1px rgb(var(--primary-rgb)) !important;
+  color: #ffffff;
+}
+
+html.black-mode .theme-option-btn.active {
+  border-color: rgb(var(--primary-rgb)) !important;
+  background-color: rgb(var(--primary-rgb) / 0.2) !important;
+  box-shadow: 0 0 0 1px rgb(var(--primary-rgb)) !important;
+  color: #ffffff;
+}
+
+.theme-radio-dot {
+  border-color: #d4d4d8;
+  transition: border-color 0.15s ease, background-color 0.15s ease;
+}
+
+.dark .theme-radio-dot {
+  border-color: #52525b;
+}
+
+html.black-mode .theme-radio-dot {
+  border-color: #3f3f46;
+}
+
+.theme-option-btn.active .theme-radio-dot {
+  border-color: rgb(var(--primary-rgb)) !important;
+}
+
+.theme-option-btn.active .theme-radio-dot > div {
+  opacity: 1 !important;
+  background-color: rgb(var(--primary-rgb)) !important;
+}
+
+.theme-preview-window {
+  transition: border-color 0.15s ease, transform 0.15s ease, box-shadow 0.15s ease;
+}
+
+.theme-option-btn.active .theme-preview-window {
+  border-color: rgb(var(--primary-rgb) / 0.6) !important;
+  box-shadow: 0 0 0 1px rgb(var(--primary-rgb) / 0.25) !important;
+}
+
+.color-btn {
+  position: relative;
+  transition: transform 0.15s ease, box-shadow 0.15s ease;
+}
+
+.color-btn.active {
+  transform: scale(1.15);
+  box-shadow: 0 0 0 2px #ffffff, 0 0 0 4px rgb(var(--primary-rgb));
+}
+
+.dark .color-btn.active {
+  box-shadow: 0 0 0 2px #18181b, 0 0 0 4px rgb(var(--primary-rgb));
+}
+
+html.black-mode .color-btn.active {
+  box-shadow: 0 0 0 2px #0e0e11, 0 0 0 4px rgb(var(--primary-rgb));
+}
+
+/* ==========================================================================
+   Tarjetas de Selección de Dialecto Markdown (.flavor-option-btn)
+   ========================================================================== */
+.flavor-option-btn {
+  position: relative;
+  transition: all 0.15s ease;
+}
+
+.flavor-option-btn.active {
+  border-color: rgb(var(--primary-rgb));
+  background-color: rgb(var(--primary-rgb) / 0.08);
+  box-shadow: 0 0 0 1px rgb(var(--primary-rgb));
+}
+
+.flavor-option-btn.active .flavor-icon-box {
+  background-color: rgb(var(--primary-rgb) / 0.15);
+  color: rgb(var(--primary-rgb));
+}
+
+.dark .flavor-option-btn.active {
+  background-color: rgb(var(--primary-rgb) / 0.15);
+  border-color: rgb(var(--primary-rgb));
+}
+
+html.black-mode .flavor-option-btn {
+  background-color: #0e0e11 !important;
+  border-color: #27272a !important;
+}
+
+html.black-mode .flavor-option-btn:hover {
+  background-color: #18181b !important;
+}
+
+html.black-mode .flavor-option-btn.active {
+  background-color: rgb(var(--primary-rgb) / 0.2) !important;
+  border-color: rgb(var(--primary-rgb)) !important;
+  box-shadow: 0 0 0 1px rgb(var(--primary-rgb));
+}
+
+/* Opciones en el menú desplegable de la barra de herramientas */
+.dropdown-flavor-item {
+  cursor: pointer;
+  transition: background-color 0.15s ease, color 0.15s ease;
+}
+
+.dropdown-flavor-item:hover {
+  background-color: rgb(var(--primary-rgb) / 0.08);
+}
+
+.dark .dropdown-flavor-item:hover {
+  background-color: rgb(var(--primary-rgb) / 0.15);
+}
+
+html.black-mode .dropdown-flavor-item:hover {
+  background-color: rgb(var(--primary-rgb) / 0.18) !important;
+}
+
+/* ==========================================================================
+   Sliders de Preferencias (.pref-range con --range-pct)
+   ========================================================================== */
+.pref-range {
+  --range-pct: 50%;
+  background: linear-gradient(
+    to right,
+    rgb(var(--primary-rgb)) 0%,
+    rgb(var(--primary-rgb)) var(--range-pct),
+    #e4e4e7 var(--range-pct),
+    #e4e4e7 100%
+  );
+  outline: none;
+}
+
+.dark .pref-range {
+  background: linear-gradient(
+    to right,
+    rgb(var(--primary-rgb)) 0%,
+    rgb(var(--primary-rgb)) var(--range-pct),
+    #3f3f46 var(--range-pct),
+    #3f3f46 100%
+  );
+}
+
+html.black-mode .pref-range {
+  background: linear-gradient(
+    to right,
+    rgb(var(--primary-rgb)) 0%,
+    rgb(var(--primary-rgb)) var(--range-pct),
+    #27272a var(--range-pct),
+    #27272a 100%
+  );
+}
+
+.pref-range::-webkit-slider-thumb {
+  -webkit-appearance: none;
+  appearance: none;
+  width: 14px;
+  height: 14px;
+  border-radius: 50%;
+  background: rgb(var(--primary-rgb));
+  border: 2px solid #ffffff;
+  box-shadow: 0 1px 3px rgba(0, 0, 0, 0.25);
+  cursor: pointer;
+}
+
+.pref-range::-moz-range-thumb {
+  width: 14px;
+  height: 14px;
+  border-radius: 50%;
+  background: rgb(var(--primary-rgb));
+  border: 2px solid #ffffff;
+  box-shadow: 0 1px 3px rgba(0, 0, 0, 0.25);
+  cursor: pointer;
+}
+
+/* ==========================================================================
+   Scrollbars Personalizadas (.custom-scrollbar)
+   ========================================================================== */
+.custom-scrollbar::-webkit-scrollbar {
+  width: 6px;
+  height: 6px;
+}
+
+.custom-scrollbar::-webkit-scrollbar-track {
+  background: transparent;
+}
+
+.custom-scrollbar::-webkit-scrollbar-thumb {
+  background-color: rgba(161, 161, 170, 0.4);
+  border-radius: 2px;
+}
+
+.custom-scrollbar::-webkit-scrollbar-thumb:hover {
+  background-color: rgba(161, 161, 170, 0.6);
+}
+
+.dark .custom-scrollbar::-webkit-scrollbar-thumb {
+  background-color: rgba(113, 113, 122, 0.4);
+}
+
+.dark .custom-scrollbar::-webkit-scrollbar-thumb:hover {
+  background-color: rgba(113, 113, 122, 0.6);
+}
+
+/* ==========================================================================
+   Editor: Cursor y Selección Temática
+   ========================================================================== */
+#editor {
+  caret-color: rgb(var(--primary-rgb));
+  contain: layout style;
+}
+
+::selection {
+  background-color: rgb(var(--primary-rgb));
+  color: var(--on-primary);
+}
+
+/* ==========================================================================
+   Tarjetas de Sugerencias Interactivas
+   ========================================================================== */
+.suggestion-card {
+  contain: content;
+  content-visibility: auto;
+  contain-intrinsic-size: 0 130px;
+  cursor: pointer;
+  transition: border-color 0.15s ease, box-shadow 0.15s ease, background-color 0.15s ease;
+}
+
+.suggestion-card:hover {
+  border-color: rgb(var(--primary-rgb) / 0.5);
+}
+
+.suggestion-card.active-match {
+  border-color: rgb(var(--primary-rgb)) !important;
+  box-shadow: 0 0 0 1px rgb(var(--primary-rgb));
+  background-color: rgb(var(--primary-rgb) / 0.04) !important;
+}
+
+.dark .suggestion-card.active-match {
+  background-color: rgb(var(--primary-rgb) / 0.08) !important;
+}
+
+/* ==========================================================================
+   Botones de Reemplazo Rápido (.fix-btn)
+   ========================================================================== */
+.fix-btn {
+  background-color: rgb(var(--primary-rgb) / 0.08);
+  color: rgb(var(--primary-rgb));
+  border: 1px solid rgb(var(--primary-rgb) / 0.25);
+  transition: all 0.15s ease;
+}
+
+.fix-btn:hover {
+  background-color: rgb(var(--primary-rgb) / 0.16);
+  border-color: rgb(var(--primary-rgb) / 0.45);
+}
+
+.dark .fix-btn {
+  background-color: rgb(var(--primary-rgb) / 0.14);
+  color: rgb(var(--primary-rgb));
+  border-color: rgb(var(--primary-rgb) / 0.35);
+}
+
+.dark .fix-btn:hover {
+  background-color: rgb(var(--primary-rgb) / 0.25);
+  border-color: rgb(var(--primary-rgb) / 0.55);
+}
+
+/* ==========================================================================
+   Color y Tipografía en Vista Previa (#previewPanel)
+   ========================================================================== */
+#previewPanel {
+  contain: content;
+}
+
+#previewPanel a {
+  color: rgb(var(--primary-rgb));
+  text-decoration: underline;
+  text-decoration-color: rgb(var(--primary-rgb) / 0.35);
+  text-underline-offset: 3px;
+  transition: text-decoration-color 0.15s ease;
+}
+
+#previewPanel a:hover {
+  text-decoration-color: rgb(var(--primary-rgb));
+}
+
+#previewPanel blockquote {
+  border-left: 1px solid rgb(var(--primary-rgb) / 0.5);
+  background: rgb(var(--primary-rgb) / 0.03);
+  border-radius: 0 4px 4px 0;
+  padding: 0.5rem 1rem;
+}
+
+.dark #previewPanel blockquote {
+  border-left-color: rgb(var(--primary-rgb) / 0.6);
+  background: rgb(var(--primary-rgb) / 0.06);
+}
+
+#previewPanel :not(pre) > code {
+  background-color: rgb(var(--primary-rgb) / 0.08);
+  color: rgb(var(--primary-rgb));
+  padding: 0.15rem 0.35rem;
+  border-radius: 2px;
+  font-size: 0.85em;
+  border: 1px solid rgb(var(--primary-rgb) / 0.15);
+}
+
+.dark #previewPanel :not(pre) > code {
+  background-color: rgb(var(--primary-rgb) / 0.15);
+  color: rgb(var(--primary-rgb));
+  border-color: rgb(var(--primary-rgb) / 0.25);
+}
+
+#previewPanel table th {
+  background-color: rgb(var(--primary-rgb) / 0.04);
+  border-bottom: 2px solid rgb(var(--primary-rgb) / 0.25);
+}
+
+.dark #previewPanel table th {
+  background-color: rgb(var(--primary-rgb) / 0.08);
+  border-bottom: 2px solid rgb(var(--primary-rgb) / 0.35);
+}
+
+/* ==========================================================================
+   Panel Lateral de Sugerencias Colapsable y Responsive
+   ========================================================================== */
+#suggestionsSidebar {
+  transition: transform 0.25s cubic-bezier(0.4, 0, 0.2, 1),
+              opacity 0.2s ease;
+}
+
+@media (max-width: 767px) {
+  #suggestionsSidebar {
+    position: fixed;
+    top: 3.5rem; /* Debajo de la barra de navegación (h-14) */
+    bottom: 0;
+    right: 0;
+    z-index: 40;
+    width: 20rem;
+    max-width: 85vw;
+    box-shadow: -4px 0 25px rgba(0, 0, 0, 0.3);
+    transform: translateX(0);
+  }
+
+  #suggestionsSidebar.sidebar-closed {
+    transform: translateX(100%);
+    pointer-events: none;
+  }
+}
+
+@media (min-width: 768px) {
+  #suggestionsSidebar.sidebar-closed {
+    width: 0 !important;
+    min-width: 0 !important;
+    opacity: 0;
+    overflow: hidden;
+    border-left-width: 0 !important;
+    pointer-events: none;
+  }
+}
+
+/* ==========================================================================
+   Contención e Inicialización de Iconos (Material Symbols)
+   Evita FOUT (Flash of Unstyled Text) y deformación del layout antes de cargar la fuente
+   ========================================================================== */
+.material-symbols-outlined {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 1em;
+  height: 1em;
+  line-height: 1;
+  overflow: hidden;
+  vertical-align: middle;
+  white-space: nowrap;
+  word-wrap: normal;
+  user-select: none;
+  font-feature-settings: 'liga';
+  -webkit-font-feature-settings: 'liga';
+  -webkit-font-smoothing: antialiased;
+  font-variation-settings: 'wght' 500, 'opsz' 24;
+  font-weight: 500;
+}
+
+/* Iconos de la barra de herramientas del editor: tamaño equilibrado y trazo definido */
+[data-purpose="editor-section"] > div:first-child .material-symbols-outlined {
+  font-size: 20px;
+  font-variation-settings: 'wght' 500, 'opsz' 24;
+}
+
+[data-purpose="editor-section"] > div:first-child .dropdown-trigger .material-symbols-outlined:last-child {
+  font-size: 18px;
+}
+
+/* ==========================================================================
+   Adaptaciones Responsive: Áreas Seguras (Notches) y Punteros Táctiles
+   ========================================================================== */
+header[data-purpose="main-header"] {
+  padding-left: max(0.75rem, env(safe-area-inset-left));
+  padding-right: max(0.75rem, env(safe-area-inset-right));
+}
+
+[data-purpose="editor-section"] > div:last-child {
+  padding-bottom: max(0.5rem, env(safe-area-inset-bottom));
+  padding-left: max(0.75rem, env(safe-area-inset-left));
+  padding-right: max(0.75rem, env(safe-area-inset-right));
+}
+
+/* Optimización para dispositivos táctiles (coarse pointer) */
+@media (pointer: coarse) {
+  /* Objetivos táctiles mínimos para evitar toques accidentales */
+  header button,
+  .toolbar-btn,
+  #toggleSidebarBtn,
+  #toggleViewBtn,
+  #btnMoreActions,
+  #undoBtn,
+  #redoBtn,
+  #copyBtn,
+  #clearBtn {
+    min-height: 36px;
+    min-width: 36px;
+  }
+
+  .theme-option-btn {
+    min-height: 40px;
+  }
+
+  .dropdown-item,
+  .dropdown-lang-item {
+    min-height: 38px;
+  }
+}
+
+/* Desplazamiento fluido en navegadores móviles */
+.custom-scrollbar {
+  -webkit-overflow-scrolling: touch;
+}
+
+/* ==========================================================================
+   Accesibilidad: Indicadores de Foco Visibles (WCAG 2.4.7 & 2.4.11)
+   ========================================================================== */
+:focus-visible {
+  outline: 2px solid rgb(var(--primary-rgb));
+  outline-offset: 2px;
+}
+
+/* Prevenir contorno en el editor ya que tiene su propio cursor y área completa */
+#editor:focus-visible {
+  outline: none;
+}
+
+/* ==========================================================================
+   Accesibilidad: Respeto a Reducción de Movimiento (WCAG 2.2.2 & 2.3.3)
+   ========================================================================== */
+@media (prefers-reduced-motion: reduce) {
+  *,
+  *::before,
+  *::after {
+    animation-duration: 0.01ms !important;
+    animation-iteration-count: 1 !important;
+    transition-duration: 0.01ms !important;
+    scroll-behavior: auto !important;
+  }
+}
+
+/* ==========================================================================
+   Accesibilidad: Modo Alto Contraste (Forced Colors / Windows Contrast)
+   ========================================================================== */
+@media (forced-colors: active) {
+  .theme-option-btn.active,
+  .color-btn.active,
+  .suggestion-card.active-match {
+    outline: 2px solid Highlight;
+  }
+}
+
+/* ==========================================================================
+/* ==========================================================================
+   Extensiones de Markdown: Alertas Oficiales 1:1 de GitHub (Primer CSS)
+   ========================================================================== */
+
+/* Contenedor base idéntico a GitHub */
+.markdown-alert {
+  padding: 0.5rem 1rem;
+  margin-bottom: 1rem;
+  color: inherit;
+  border-left: .25em solid #d0d7de;
+  background-color: transparent;
+}
+
+.markdown-alert > :first-child {
+  margin-top: 0;
+}
+
+.markdown-alert > :last-child {
+  margin-bottom: 0;
+}
+
+/* Título con alineación de icono Octicon */
+.markdown-alert .markdown-alert-title {
+  display: flex;
+  font-weight: 500;
+  align-items: center;
+  line-height: 1;
+  font-size: 0.875rem;
+  margin-bottom: 0.5rem;
+}
+
+.markdown-alert .markdown-alert-title svg.octicon {
+  margin-right: 0.5rem;
+  display: inline-block;
+  vertical-align: text-bottom;
+  fill: currentColor;
+  flex-shrink: 0;
+}
+
+/* Compensación de márgenes de párrafos dentro de prose */
+.prose .markdown-alert p {
+  margin-top: 0.25rem;
+  margin-bottom: 0.25rem;
+}
+
+.prose .markdown-alert .markdown-alert-title {
+  margin-top: 0;
+  margin-bottom: 0.5rem;
+}
+
+/* Colores Oficiales GitHub Light */
+.markdown-alert.markdown-alert-note {
+  border-left-color: #0969da;
+}
+.markdown-alert.markdown-alert-note .markdown-alert-title {
+  color: #0969da;
+}
+
+.markdown-alert.markdown-alert-tip {
+  border-left-color: #1a7f37;
+}
+.markdown-alert.markdown-alert-tip .markdown-alert-title {
+  color: #1a7f37;
+}
+
+.markdown-alert.markdown-alert-important {
+  border-left-color: #8250df;
+}
+.markdown-alert.markdown-alert-important .markdown-alert-title {
+  color: #8250df;
+}
+
+.markdown-alert.markdown-alert-warning {
+  border-left-color: #9a6700;
+}
+.markdown-alert.markdown-alert-warning .markdown-alert-title {
+  color: #9a6700;
+}
+
+.markdown-alert.markdown-alert-caution {
+  border-left-color: #d1242f;
+}
+.markdown-alert.markdown-alert-caution .markdown-alert-title {
+  color: #d1242f;
+}
+
+/* Colores Oficiales GitHub Dark */
+.dark .markdown-alert {
+  border-left-color: #30363d;
+}
+
+.dark .markdown-alert.markdown-alert-note {
+  border-left-color: #1f6feb;
+}
+.dark .markdown-alert.markdown-alert-note .markdown-alert-title {
+  color: #4493f8;
+}
+
+.dark .markdown-alert.markdown-alert-tip {
+  border-left-color: #238636;
+}
+.dark .markdown-alert.markdown-alert-tip .markdown-alert-title {
+  color: #3fb950;
+}
+
+.dark .markdown-alert.markdown-alert-important {
+  border-left-color: #8957e5;
+}
+.dark .markdown-alert.markdown-alert-important .markdown-alert-title {
+  color: #ab7df8;
+}
+
+.dark .markdown-alert.markdown-alert-warning {
+  border-left-color: #9e6a03;
+}
+.dark .markdown-alert.markdown-alert-warning .markdown-alert-title {
+  color: #d29922;
+}
+
+.dark .markdown-alert.markdown-alert-caution {
+  border-left-color: #da3633;
+}
+.dark .markdown-alert.markdown-alert-caution .markdown-alert-title {
+  color: #f85149;
+}
+
+/* Modo OLED Negro Puro */
+html.black-mode .markdown-alert {
+  border-left-color: #27272a;
+}
+html.black-mode .markdown-alert.markdown-alert-note {
+  border-left-color: #1f6feb;
+}
+html.black-mode .markdown-alert.markdown-alert-tip {
+  border-left-color: #238636;
+}
+html.black-mode .markdown-alert.markdown-alert-important {
+  border-left-color: #8957e5;
+}
+html.black-mode .markdown-alert.markdown-alert-warning {
+  border-left-color: #9e6a03;
+}
+html.black-mode .markdown-alert.markdown-alert-caution {
+  border-left-color: #da3633;
+}
+
+/* Notas al pie (Footnotes - Perfil Académico) */
+.footnote-ref a {
+  text-decoration: none;
+  padding: 0 0.15rem;
+  color: rgb(var(--primary-rgb));
+  font-weight: 600;
+}
+.footnote-ref a:hover {
+  text-decoration: underline;
+}
+
+.footnotes {
+  margin-top: 2rem;
+  padding-top: 1rem;
+  border-top: 1px solid rgba(161, 161, 170, 0.3);
+}
+.dark .footnotes {
+  border-top-color: rgba(63, 63, 70, 0.6);
+}
+html.black-mode .footnotes {
+  border-top-color: #27272a;
+}
+
+/* Listas de tareas */
+.task-list-item {
+  list-style-type: none !important;
+}
+.task-list-item input[type="checkbox"] {
+  accent-color: rgb(var(--primary-rgb));
+}
+
+
