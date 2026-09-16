@@ -9,7 +9,7 @@ export function renderNavbar() {
     <!-- BEGIN: Top Navigation Bar -->
     <header
       id="app-header-root"
-      class="relative z-20 flex items-center justify-between px-3 sm:px-4 py-2 border-b border-zinc-200/60 dark:border-zinc-700/50 bg-white dark:bg-zinc-800 shadow-sm shrink-0 h-14 transition-colors duration-200"
+      class="relative z-20 flex items-center justify-between px-3 sm:px-4 py-2 border-b border-zinc-200/60 dark:border-zinc-700/50 bg-white dark:bg-zinc-800 shadow-sm shrink-0 h-14 transition-colors duration-200 animate-fade-in"
       role="banner"
       aria-label="Barra de herramientas principal"
       data-purpose="main-header"

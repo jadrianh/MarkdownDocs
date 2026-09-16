@@ -6,4 +6,5 @@ export * from './toolbar/index.js';
 export * from './workspace/index.js';
 export * from './sidebar/index.js';
 export * from './modal/index.js';
+export * from './skeleton/Skeleton.template.js';
 export { renderToastContainer } from '../ui/toast.view.js';

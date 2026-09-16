@@ -1,3 +1,5 @@
+import { renderSuggestionsSkeleton } from '../../components/skeleton/Skeleton.template.js';
+
 export const GrammarView = {
     elements: {},
 
@@ -41,11 +43,7 @@ export const GrammarView = {
             if (this.elements.suggestionsBadge) {
                 this.elements.suggestionsBadge.classList.add('hidden');
             }
-            this.elements.resultsPanel.innerHTML = `
-                <div class="flex flex-col items-center justify-center h-full text-zinc-400 dark:text-zinc-500 animate-pulse font-mono text-xs">
-                    <span class="material-symbols-outlined text-3xl mb-2 animate-spin">sync</span>
-                    <p class="tracking-wide uppercase">Analizando texto...</p>
-                </div>`;
+            this.elements.resultsPanel.innerHTML = renderSuggestionsSkeleton();
         }
     },
 

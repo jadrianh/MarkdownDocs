@@ -208,10 +208,10 @@ export function renderFormattingTools() {
                 >Ctrl+\</span
               >
             </button>
-            <div class="@[480px]:hidden my-1 border-t border-zinc-200/60 dark:border-zinc-700/60"></div>
+            <div class="@[520px]:hidden my-1 border-t border-zinc-200/60 dark:border-zinc-700/60"></div>
             <button
               role="menuitem"
-              class="dropdown-item @[480px]:hidden w-full flex items-center justify-between px-3 py-1.5 hover:bg-zinc-100 dark:hover:bg-zinc-700/60 transition-colors text-left"
+              class="dropdown-item @[520px]:hidden w-full flex items-center justify-between px-3 py-1.5 hover:bg-zinc-100 dark:hover:bg-zinc-700/60 transition-colors text-left"
               data-action="insertElement"
               data-value="link"
             >
@@ -223,7 +223,7 @@ export function renderFormattingTools() {
             </button>
             <button
               role="menuitem"
-              class="dropdown-item @[480px]:hidden w-full flex items-center justify-between px-3 py-1.5 hover:bg-zinc-100 dark:hover:bg-zinc-700/60 transition-colors text-left"
+              class="dropdown-item @[520px]:hidden w-full flex items-center justify-between px-3 py-1.5 hover:bg-zinc-100 dark:hover:bg-zinc-700/60 transition-colors text-left"
               data-action="insertElement"
               data-value="codeblock"
             >
@@ -235,7 +235,7 @@ export function renderFormattingTools() {
             </button>
             <button
               role="menuitem"
-              class="dropdown-item @[480px]:hidden w-full flex items-center justify-between px-3 py-1.5 hover:bg-zinc-100 dark:hover:bg-zinc-700/60 transition-colors text-left"
+              class="dropdown-item @[520px]:hidden w-full flex items-center justify-between px-3 py-1.5 hover:bg-zinc-100 dark:hover:bg-zinc-700/60 transition-colors text-left"
               data-action="insertElement"
               data-value="quote"
             >
@@ -312,10 +312,10 @@ export function renderFormattingTools() {
           </div>
         </div>
 
-        <div class="w-px h-4 bg-zinc-200 dark:bg-zinc-700 mx-0.5 hidden @[480px]:block"></div>
+        <div class="w-px h-4 bg-zinc-200 dark:bg-zinc-700 mx-0.5 hidden @[520px]:block"></div>
 
         <!-- 6. Insertar Elementos (Dropdown Button) -->
-        <div class="relative dropdown-container hidden @[480px]:block">
+        <div class="relative dropdown-container hidden @[520px]:block">
           <button
             id="btnInsertElement"
             aria-label="Insertar Elementos"

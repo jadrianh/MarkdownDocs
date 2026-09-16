@@ -39,8 +39,12 @@ export function renderAboutPage() {
               <kbd class="px-1.5 py-0.5 text-[11px] bg-white dark:bg-zinc-800 border border-zinc-200 dark:border-zinc-700 rounded text-zinc-700 dark:text-zinc-300 shadow-2xs font-mono">Ctrl + Shift + C</kbd>
             </div>
             <div class="flex items-center justify-between p-2 rounded border border-zinc-200/70 dark:border-zinc-800 bg-zinc-50/50 dark:bg-zinc-800/20">
-              <span class="text-zinc-600 dark:text-zinc-400 font-sans text-xs">Alternar Vista</span>
-              <kbd class="px-1.5 py-0.5 text-[11px] bg-white dark:bg-zinc-800 border border-zinc-200 dark:border-zinc-700 rounded text-zinc-700 dark:text-zinc-300 shadow-2xs font-mono">Ctrl + Shift + P</kbd>
+              <span class="text-zinc-600 dark:text-zinc-400 font-sans text-xs">Vista Dividida</span>
+              <kbd class="px-1.5 py-0.5 text-[11px] bg-white dark:bg-zinc-800 border border-zinc-200 dark:border-zinc-700 rounded text-zinc-700 dark:text-zinc-300 shadow-2xs font-mono">Ctrl + Alt + S</kbd>
+            </div>
+            <div class="flex items-center justify-between p-2 rounded border border-zinc-200/70 dark:border-zinc-800 bg-zinc-50/50 dark:bg-zinc-800/20">
+              <span class="text-zinc-600 dark:text-zinc-400 font-sans text-xs">Solo Editor / Previa</span>
+              <kbd class="px-1.5 py-0.5 text-[11px] bg-white dark:bg-zinc-800 border border-zinc-200 dark:border-zinc-700 rounded text-zinc-700 dark:text-zinc-300 shadow-2xs font-mono">Ctrl + Alt + E / P</kbd>
             </div>
             <div class="flex items-center justify-between p-2 rounded border border-zinc-200/70 dark:border-zinc-800 bg-zinc-50/50 dark:bg-zinc-800/20">
               <span class="text-zinc-600 dark:text-zinc-400 font-sans text-xs">Cerrar Ventana</span>

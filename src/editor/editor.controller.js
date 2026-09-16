@@ -30,14 +30,14 @@ export function initEditorController() {
 
     // Actualizar vista previa en tiempo real si cambia el perfil de Markdown
     ParserManager.subscribe(() => {
-        if (state.isPreviewMode) {
+        if (state.isPreviewVisible) {
             EditorView.updatePreview(true);
         }
     });
 
     editor.addEventListener('input', () => {
         EditorView.updateCounters();
-        if (state.isPreviewMode) EditorView.updatePreview();
+        if (state.isPreviewVisible) EditorView.updatePreview();
 
         // Si el usuario modifica el texto, invalidar sugerencias obsoletas
         if (state.currentMatches && state.currentMatches.length > 0) {
@@ -128,7 +128,41 @@ export function initEditorController() {
         }
     });
 
-    document.getElementById('toggleViewBtn')?.addEventListener('click', () => EditorView.toggleViewMode());
+    // Atajos globales de modo de visualización (funcionan en cualquier modo, incluso con editor oculto)
+    document.addEventListener('keydown', (e) => {
+        const isCtrlOrCmd = e.ctrlKey || e.metaKey;
+        const isAlt = e.altKey;
+        const isShift = e.shiftKey;
+        const key = e.key ? e.key.toLowerCase() : '';
+
+        if (isCtrlOrCmd && isAlt && !isShift) {
+            if (key === 'e') { e.preventDefault(); EditorView.setViewMode('editor'); return; }
+            if (key === 's') { e.preventDefault(); EditorView.toggleSplitMode(); return; }
+            if (key === 'p') {
+                e.preventDefault();
+                if (state.viewMode !== 'split') {
+                    EditorView.toggleViewMode();
+                }
+                return;
+            }
+        }
+    });
+
+    // Botón 1: Alternar entre editor y vista previa
+    document.getElementById('toggleViewBtn')?.addEventListener('click', (e) => {
+        e.stopPropagation();
+        if (state.viewMode === 'split') return;
+        EditorView.toggleViewMode();
+    });
+
+    // Botón 2: Alternar vista dividida (Split View) similar a toggleSidebarBtn
+    document.getElementById('toggleSplitBtn')?.addEventListener('click', (e) => {
+        e.stopPropagation();
+        EditorView.toggleSplitMode();
+    });
+
+    // Inicializar scroll sincronizado entre editor y preview en modo dividido
+    setupScrollSync();
 
     // Manejo accesible de despliegue de menús desplegables
     document.querySelectorAll('.dropdown-trigger').forEach(trigger => {
@@ -204,7 +238,7 @@ function handleFileImport(e) {
             editor.value = text;
             state.history.push(text);
             EditorView.updateCounters();
-            if (state.isPreviewMode) EditorView.updatePreview();
+            if (state.isPreviewVisible) EditorView.updatePreview();
             clearGrammarMatches();
             persistDraft();
             ToastView.show(`Archivo "${file.name}" importado`, "success");
@@ -303,7 +337,7 @@ function performUndo() {
     if (prev !== null) { 
         EditorView.elements.editor.value = prev; 
         EditorView.updateCounters();
-        if (state.isPreviewMode) EditorView.updatePreview(true);
+        if (state.isPreviewVisible) EditorView.updatePreview(true);
         persistDraft();
     }
 }
@@ -313,7 +347,7 @@ function performRedo() {
     if (next !== null) { 
         EditorView.elements.editor.value = next; 
         EditorView.updateCounters();
-        if (state.isPreviewMode) EditorView.updatePreview(true);
+        if (state.isPreviewVisible) EditorView.updatePreview(true);
         persistDraft();
     }
 }
@@ -368,10 +402,50 @@ function clearEditor() {
     }
     editor.value = '';
     EditorView.updateCounters();
-    if (state.isPreviewMode) EditorView.updatePreview(true);
+    if (state.isPreviewVisible) EditorView.updatePreview(true);
     state.history.push('');
     clearGrammarMatches();
     StorageService.clearDraft();
     EditorView.setSaveStatus('idle');
     ToastView.show("Contenido eliminado", "info");
+}
+
+function setupScrollSync() {
+    const { editor, previewPanel } = EditorView.elements;
+    if (!editor || !previewPanel) return;
+
+    let isSyncingFromEditor = false;
+    let isSyncingFromPreview = false;
+
+    editor.addEventListener('scroll', () => {
+        if (state.viewMode !== 'split') return;
+        if (isSyncingFromPreview) return;
+
+        isSyncingFromEditor = true;
+        const maxEditorScroll = editor.scrollHeight - editor.clientHeight;
+        if (maxEditorScroll > 0) {
+            const scrollPct = editor.scrollTop / maxEditorScroll;
+            const maxPreviewScroll = previewPanel.scrollHeight - previewPanel.clientHeight;
+            previewPanel.scrollTop = scrollPct * maxPreviewScroll;
+        }
+        requestAnimationFrame(() => {
+            isSyncingFromEditor = false;
+        });
+    }, { passive: true });
+
+    previewPanel.addEventListener('scroll', () => {
+        if (state.viewMode !== 'split') return;
+        if (isSyncingFromEditor) return;
+
+        isSyncingFromPreview = true;
+        const maxPreviewScroll = previewPanel.scrollHeight - previewPanel.clientHeight;
+        if (maxPreviewScroll > 0) {
+            const scrollPct = previewPanel.scrollTop / maxPreviewScroll;
+            const maxEditorScroll = editor.scrollHeight - editor.clientHeight;
+            editor.scrollTop = scrollPct * maxEditorScroll;
+        }
+        requestAnimationFrame(() => {
+            isSyncingFromPreview = false;
+        });
+    }, { passive: true });
 }

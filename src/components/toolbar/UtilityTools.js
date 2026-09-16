@@ -6,7 +6,7 @@
  */
 export function renderUtilityTools() {
     return /* html */ `
-      <div class="flex items-center gap-0.5 sm:gap-1 text-xs font-mono shrink-0">
+      <div class="flex items-center gap-0.5 @[600px]:gap-1 text-xs font-mono shrink-0">
         <!-- Markdown Flavor Selector Dropdown -->
         <div class="relative dropdown-container hidden @[750px]:flex items-center">
           <button
@@ -392,17 +392,34 @@ export function renderUtilityTools() {
 
         <div class="w-px h-4 bg-zinc-200 dark:bg-zinc-700 mx-0.5"></div>
 
-        <!-- Editor/Preview Toggle Button -->
+        <!-- 1. Botón Alternar entre Vista Previa y Editor -->
         <button
           id="toggleViewBtn"
+          type="button"
           aria-label="Alternar entre editor y vista previa"
-          class="flex items-center justify-center w-8 h-8 hover:bg-zinc-200/60 dark:hover:bg-zinc-700 rounded-sm transition-colors text-zinc-600 dark:text-zinc-300"
-          title="Alternar editor / vista previa"
+          class="flex items-center justify-center w-8 h-8 hover:bg-zinc-200/60 dark:hover:bg-zinc-700 rounded-sm transition-colors text-zinc-600 dark:text-zinc-300 disabled:opacity-40 disabled:pointer-events-none disabled:cursor-not-allowed"
+          title="Ver vista previa (Ctrl+Alt+P)"
         >
           <span
             id="toggleViewIcon"
             class="material-symbols-outlined text-[20px]"
             >chrome_reader_mode</span
+          >
+        </button>
+
+        <!-- 2. Botón Alternar Vista Dividida (Split View) -->
+        <button
+          id="toggleSplitBtn"
+          type="button"
+          aria-label="Alternar vista dividida"
+          aria-pressed="false"
+          class="flex items-center justify-center w-8 h-8 hover:bg-zinc-200/60 dark:hover:bg-zinc-700 rounded-sm transition-colors text-zinc-600 dark:text-zinc-300"
+          title="Alternar vista dividida (Ctrl+Alt+S)"
+        >
+          <span
+            id="toggleSplitIcon"
+            class="material-symbols-outlined text-[20px]"
+            >vertical_split</span
           >
         </button>
 
@@ -420,7 +437,7 @@ export function renderUtilityTools() {
           >
         </button>
 
-        <div class="w-px h-4 bg-zinc-200 dark:bg-zinc-700 mx-0.5"></div>
+        <div class="w-px h-4 bg-zinc-200 dark:bg-zinc-700 mx-0.5 hidden @[600px]:block"></div>
 
         <!-- History & Clipboard (visible en contenedores anchos >= 600px) -->
         <div class="hidden @[600px]:flex items-center gap-0.5">

@@ -92,4 +92,29 @@ describe('EditorService & State', () => {
         state.shiftOffsetsAfter(5, 6); // offset 20 should become 26
         expect(state.currentMatches[1].offset).toBe(26);
     });
+
+    it('manages viewMode and split view visibility states correctly', () => {
+        state.setViewMode('editor');
+        expect(state.viewMode).toBe('editor');
+        expect(state.isEditorVisible).toBe(true);
+        expect(state.isPreviewVisible).toBe(false);
+        expect(state.isPreviewMode).toBe(false);
+
+        state.setViewMode('split');
+        expect(state.viewMode).toBe('split');
+        expect(state.isEditorVisible).toBe(true);
+        expect(state.isPreviewVisible).toBe(true);
+        expect(state.isPreviewMode).toBe(false);
+
+        state.setViewMode('preview');
+        expect(state.viewMode).toBe('preview');
+        expect(state.isEditorVisible).toBe(false);
+        expect(state.isPreviewVisible).toBe(true);
+        expect(state.isPreviewMode).toBe(true);
+
+        // Backward compatibility
+        state.setPreviewMode(false);
+        expect(state.viewMode).toBe('editor');
+        expect(state.isPreviewMode).toBe(false);
+    });
 });

@@ -24,11 +24,26 @@ const setStoredLanguage = (lang) => {
 export class AppState {
     constructor() {
         this.history = new HistoryManager();
+        this.viewMode = 'editor'; // 'editor' | 'split' | 'preview'
         this.isPreviewMode = false;
         this.isTyping = false;
         this.currentMatches = [];
         this.currentLanguage = getStoredLanguage();
         this.isSidebarOpen = typeof window !== 'undefined' ? window.innerWidth >= 768 : true;
+    }
+
+    setViewMode(mode) {
+        if (mode !== 'editor' && mode !== 'split' && mode !== 'preview') return;
+        this.viewMode = mode;
+        this.isPreviewMode = (mode === 'preview');
+    }
+
+    get isPreviewVisible() {
+        return this.viewMode === 'split' || this.viewMode === 'preview';
+    }
+
+    get isEditorVisible() {
+        return this.viewMode === 'editor' || this.viewMode === 'split';
     }
 
     setSidebarOpen(isOpen) {
@@ -42,6 +57,7 @@ export class AppState {
 
     setPreviewMode(isPreview) {
         this.isPreviewMode = isPreview;
+        this.viewMode = isPreview ? 'preview' : 'editor';
     }
 
     setTyping(isTyping) {

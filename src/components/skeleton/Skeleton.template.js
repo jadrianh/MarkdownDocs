@@ -1,110 +1,10 @@
-<!doctype html>
-<html lang="es" class="light">
-  <head>
-    <meta charset="utf-8" />
-    <meta
-      content="width=device-width, initial-scale=1.0, viewport-fit=cover"
-      name="viewport"
-    />
+/**
+ * Skeleton & Shimmer Templates
+ * Placeholders de carga inicial y asíncrona para Navbar, Workspace y Sugerencias.
+ */
 
-    <meta
-      name="description"
-      content="Editor Markdown inteligente con corrección ortográfica y gramatical mediante LanguageTool"
-    />
-    <meta
-      name="keywords"
-      content="markdown, editor, languagetool, corrección, texto"
-    />
-    <meta name="author" content="Adrian H." />
-
-    <meta
-      property="og:title"
-      content="Markdown Docs - Editor Markdown Inteligente"
-    />
-    <meta
-      property="og:description"
-      content="Escribe en Markdown con corrección ortográfica en tiempo real"
-    />
-    <meta property="og:type" content="website" />
-
-    <title>Markdown Docs - Editor Inteligente</title>
-    <link rel="icon" type="image/svg+xml" href="/favicon.svg" />
-
-    <!-- Anti-FOUC: Inicializar tema y color inmediatamente antes del renderizado -->
-    <script>
-      (function () {
-        try {
-          const mode = localStorage.getItem('themeMode') || 'light';
-          const color = localStorage.getItem('themeColor') || '79 70 229';
-          const root = document.documentElement;
-
-          root.classList.remove('light', 'dark', 'black-mode');
-          if (mode === 'dark') {
-            root.classList.add('dark');
-          } else if (mode === 'black') {
-            root.classList.add('dark', 'black-mode');
-          } else {
-            root.classList.add('light');
-          }
-
-          root.style.setProperty('--primary-rgb', color);
-          const parts = color.split(' ').map(Number);
-          if (parts.length === 3) {
-            const lum = (0.299 * parts[0] + 0.587 * parts[1] + 0.114 * parts[2]) / 255;
-            root.style.setProperty('--on-primary', lum > 0.6 ? '#18181b' : '#ffffff');
-          }
-        } catch (e) {
-          // Fallback seguro
-        }
-      })();
-    </script>
-
-    <!-- Google Fonts & Material Symbols optimizados para Core Web Vitals (FCP/LCP) -->
-    <link rel="preconnect" href="https://fonts.googleapis.com" />
-    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
-    <!-- Fuentes Críticas de la Interfaz y Editor -->
-    <link
-      href="https://fonts.googleapis.com/css2?family=Hanken+Grotesk:wght@400;500;600;700&family=JetBrains+Mono:wght@400;500;600;700&display=swap"
-      rel="stylesheet"
-    />
-    <!-- Fuentes de Preferencias Secundarias (asíncronas sin bloqueo de render) -->
-    <link
-      href="https://fonts.googleapis.com/css2?family=Fira+Code:wght@400;500&family=Merriweather:wght@400;700&family=Source+Code+Pro:wght@400;500&display=swap"
-      rel="stylesheet"
-      media="print"
-      onload="this.media='all'"
-    />
-    <!-- Material Symbols con ejes ordenados alfabéticamente y FILL en 1 (Filled) -->
-    <link
-      href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:FILL,GRAD,opsz,wght@1,0,20..48,400..700&display=block"
-      rel="stylesheet"
-    />
-
-    <link rel="stylesheet" href="/src/style.css" />
-  </head>
-
-  <body
-    class="bg-zinc-50 dark:bg-zinc-900 text-zinc-900 dark:text-zinc-100 font-sans flex flex-col h-screen antialiased selection:bg-primary selection:text-white overflow-hidden"
-  >
-    <!-- Skip to Content Link for Keyboard Accessibility (WCAG 2.4.1) -->
-    <a
-      href="#editor"
-      class="sr-only focus:not-sr-only focus:absolute focus:top-3 focus:left-3 focus:z-50 focus:px-3.5 focus:py-2 focus:bg-primary focus:text-white focus:rounded focus:shadow-lg focus:outline-none font-mono text-xs font-semibold uppercase tracking-wider"
-    >
-      Saltar al editor
-    </a>
-
-    <!-- Toast Notification Container -->
-    <div id="app-toast-root"></div>
-
-    <!-- Attribution -->
-    <div
-      class="fixed bottom-4 left-4 text-[10px] font-mono text-zinc-400 dark:text-zinc-500 pointer-events-none z-10"
-    >
-      Made By: Adrian H.
-    </div>
-
-    <!-- Puntos de Montaje Declarativos con Placeholders Skeleton Shimmer para Carga Inicial Instantánea -->
+export function renderNavbarSkeleton() {
+    return /* html */ `
     <header
       id="app-header-root"
       class="relative z-20 flex items-center justify-between px-3 sm:px-4 py-2 border-b border-zinc-200/60 dark:border-zinc-700/50 bg-white dark:bg-zinc-800 shadow-sm shrink-0 h-14"
@@ -128,9 +28,12 @@
         <div class="w-24 sm:w-28 h-8 sm:h-9 rounded-md skeleton-shimmer"></div>
       </div>
     </header>
+    `.trim();
+}
 
-    <main
-      id="app-workspace-root"
+export function renderWorkspaceSkeleton() {
+    return /* html */ `
+    <div
       class="flex-1 flex overflow-hidden min-w-0"
       aria-busy="true"
     >
@@ -200,9 +103,47 @@
           </div>
         </div>
       </aside>
-    </main>
-    <div id="app-modal-root"></div>
+    </div>
+    `.trim();
+}
 
-    <script type="module" src="./src/core/main.js"></script>
-  </body>
-</html>
+export function renderSuggestionsSkeleton() {
+    return /* html */ `
+    <div class="space-y-3 p-1 animate-fade-in" aria-busy="true" aria-label="Analizando texto...">
+      <div class="flex items-center justify-between pb-1">
+        <span class="text-[11px] font-mono font-semibold text-zinc-400 dark:text-zinc-500 uppercase tracking-wider flex items-center gap-1.5">
+          <span class="material-symbols-outlined text-[16px] animate-spin text-primary">sync</span>
+          Analizando documento...
+        </span>
+        <div class="w-12 h-3.5 rounded skeleton-shimmer"></div>
+      </div>
+      <div class="p-3.5 rounded-lg border border-zinc-200/70 dark:border-zinc-700/60 bg-white/80 dark:bg-zinc-800/60 space-y-2.5 shadow-2xs">
+        <div class="flex items-center justify-between">
+          <div class="w-20 h-3.5 rounded skeleton-shimmer"></div>
+          <div class="w-12 h-3 rounded skeleton-shimmer"></div>
+        </div>
+        <div class="space-y-1.5 pt-1">
+          <div class="w-full h-3 rounded skeleton-shimmer"></div>
+          <div class="w-4/5 h-3 rounded skeleton-shimmer"></div>
+        </div>
+        <div class="flex items-center gap-2 pt-1.5">
+          <div class="w-24 h-6 rounded-md skeleton-shimmer"></div>
+          <div class="w-16 h-6 rounded-md skeleton-shimmer"></div>
+        </div>
+      </div>
+      <div class="p-3.5 rounded-lg border border-zinc-200/70 dark:border-zinc-700/60 bg-white/80 dark:bg-zinc-800/60 space-y-2.5 shadow-2xs">
+        <div class="flex items-center justify-between">
+          <div class="w-24 h-3.5 rounded skeleton-shimmer"></div>
+          <div class="w-10 h-3 rounded skeleton-shimmer"></div>
+        </div>
+        <div class="space-y-1.5 pt-1">
+          <div class="w-11/12 h-3 rounded skeleton-shimmer"></div>
+          <div class="w-3/4 h-3 rounded skeleton-shimmer"></div>
+        </div>
+        <div class="flex items-center gap-2 pt-1.5">
+          <div class="w-20 h-6 rounded-md skeleton-shimmer"></div>
+        </div>
+      </div>
+    </div>
+    `.trim();
+}
