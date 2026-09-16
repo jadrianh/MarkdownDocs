@@ -3,15 +3,9 @@
 @plugin "@tailwindcss/typography";
 @plugin "@tailwindcss/container-queries";
 
-/* Antes cargados por CDN en index.html (jsdelivr) — ahora vienen del propio
-   bundle de Vite, con la MISMA versión que usa editor.service.js. Esto es lo
-   que elimina la segunda fuente del "flash": ya no hay una petición externa
-   más que competir con el primer render. */
 @import "katex/dist/katex.min.css";
 @import "prismjs/themes/prism-tomorrow.css";
 
-/* Migrado 1:1 desde el `tailwind.config` embebido que vivía en index.html.
-   En v4 la configuración de theme se declara en CSS, no en JS. */
 @theme {
   --color-surface-container-low: #1b1b1e;
   --color-surface-container-high: #2a2a2d;

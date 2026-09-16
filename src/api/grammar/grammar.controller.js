@@ -38,14 +38,19 @@ export function initGrammarController() {
         }
     });
 
-    // Ajustar visibilidad del backdrop al cambiar tamaño de pantalla
+    // Ajustar visibilidad del backdrop al cambiar tamaño de pantalla con rAF throttle
+    let resizeRaf = null;
     window.addEventListener('resize', () => {
-        if (window.innerWidth >= 768) {
-            document.getElementById('sidebarBackdrop')?.classList.add('hidden');
-        } else if (state.isSidebarOpen) {
-            document.getElementById('sidebarBackdrop')?.classList.remove('hidden');
-        }
-    });
+        if (resizeRaf) return;
+        resizeRaf = requestAnimationFrame(() => {
+            resizeRaf = null;
+            if (window.innerWidth >= 768) {
+                document.getElementById('sidebarBackdrop')?.classList.add('hidden');
+            } else if (state.isSidebarOpen) {
+                document.getElementById('sidebarBackdrop')?.classList.remove('hidden');
+            }
+        });
+    }, { passive: true });
 
     // Sincronizar UI de idioma inicial con el estado guardado
     updateLanguageUI(state.currentLanguage);
@@ -163,7 +168,7 @@ function applyFixLocal(matchIndex, replacement) {
     state.history.push(editor.value);
     
     editor.focus();
-    editor.dispatchEvent(new Event('input'));
+    editor.dispatchEvent(new CustomEvent('input', { detail: { source: 'grammar-fix' } }));
   
     GrammarView.renderMatches(state.currentMatches, applyFixLocal, ignoreMatchLocal, selectMatchInEditor);
 }

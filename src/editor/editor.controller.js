@@ -35,12 +35,13 @@ export function initEditorController() {
         }
     });
 
-    editor.addEventListener('input', () => {
+    editor.addEventListener('input', (e) => {
         EditorView.updateCounters();
         if (state.isPreviewVisible) EditorView.updatePreview();
 
-        // Si el usuario modifica el texto, invalidar sugerencias obsoletas
-        if (state.currentMatches && state.currentMatches.length > 0) {
+        // Si el usuario modifica el texto directamente, invalidar sugerencias obsoletas.
+        // Las correcciones aplicadas desde el panel gramatical preservan los matches con shiftOffsetsAfter.
+        if (e?.detail?.source !== 'grammar-fix' && state.currentMatches && state.currentMatches.length > 0) {
             clearGrammarMatches();
         }
 
