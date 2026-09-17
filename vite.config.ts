@@ -2,8 +2,19 @@
 import { defineConfig } from 'vite'
 import tailwindcss from '@tailwindcss/vite'
 
+const getBasePath = () => {
+  if (process.env.BASE_PATH) {
+    return process.env.BASE_PATH.endsWith('/') ? process.env.BASE_PATH : `${process.env.BASE_PATH}/`;
+  }
+  if (process.env.GITHUB_REPOSITORY) {
+    const repo = process.env.GITHUB_REPOSITORY.split('/')[1];
+    return `/${repo}/`;
+  }
+  return './';
+};
+
 export default defineConfig({
-  base: process.env.BASE_PATH || (process.env.GITHUB_REPOSITORY ? `/${process.env.GITHUB_REPOSITORY.split('/')[1]}/` : './'),
+  base: getBasePath(),
   plugins: [tailwindcss()],
   build: {
     rollupOptions: {
