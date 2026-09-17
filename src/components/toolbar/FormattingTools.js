@@ -208,6 +208,40 @@ export function renderFormattingTools() {
                 >Ctrl+\</span
               >
             </button>
+            <div class="@[380px]:hidden my-1 border-t border-zinc-200/60 dark:border-zinc-700/60"></div>
+            <button
+              role="menuitem"
+              class="dropdown-item @[380px]:hidden w-full flex items-center justify-between px-3 py-1.5 hover:bg-zinc-100 dark:hover:bg-zinc-700/60 transition-colors text-left"
+              data-action="listStyle"
+              data-value="unordered"
+            >
+              <span class="flex items-center gap-2">
+                <span class="material-symbols-outlined text-[18px]">format_list_bulleted</span>
+                Lista de viñetas
+              </span>
+            </button>
+            <button
+              role="menuitem"
+              class="dropdown-item @[380px]:hidden w-full flex items-center justify-between px-3 py-1.5 hover:bg-zinc-100 dark:hover:bg-zinc-700/60 transition-colors text-left"
+              data-action="listStyle"
+              data-value="ordered"
+            >
+              <span class="flex items-center gap-2">
+                <span class="material-symbols-outlined text-[18px]">format_list_numbered</span>
+                Lista numérica
+              </span>
+            </button>
+            <button
+              role="menuitem"
+              class="dropdown-item @[380px]:hidden w-full flex items-center justify-between px-3 py-1.5 hover:bg-zinc-100 dark:hover:bg-zinc-700/60 transition-colors text-left"
+              data-action="listStyle"
+              data-value="task"
+            >
+              <span class="flex items-center gap-2">
+                <span class="material-symbols-outlined text-[18px]">check_box</span>
+                Lista de tareas
+              </span>
+            </button>
             <div class="@[520px]:hidden my-1 border-t border-zinc-200/60 dark:border-zinc-700/60"></div>
             <button
               role="menuitem"
@@ -219,7 +253,7 @@ export function renderFormattingTools() {
                 <span class="material-symbols-outlined text-[18px]">link</span>
                 Vínculo
               </span>
-              <span class="text-[10px] text-zinc-500 dark:text-zinc-400 font-mono">Ctrl+Alt+4</span>
+              <span class="text-[10px] text-zinc-500 dark:text-zinc-400 font-mono">Ctrl+K</span>
             </button>
             <button
               role="menuitem"
@@ -229,9 +263,8 @@ export function renderFormattingTools() {
             >
               <span class="flex items-center gap-2">
                 <span class="material-symbols-outlined text-[18px]">code_blocks</span>
-                Fragmento de código
+                Bloque de código
               </span>
-              <span class="text-[10px] text-zinc-500 dark:text-zinc-400 font-mono">Ctrl+Alt+5</span>
             </button>
             <button
               role="menuitem"
@@ -243,7 +276,61 @@ export function renderFormattingTools() {
                 <span class="material-symbols-outlined text-[18px]">format_quote</span>
                 Citar
               </span>
-              <span class="text-[10px] text-zinc-500 dark:text-zinc-400 font-mono">Ctrl+Alt+6</span>
+            </button>
+            <button
+              role="menuitem"
+              class="dropdown-item @[520px]:hidden w-full flex items-center justify-between px-3 py-1.5 hover:bg-zinc-100 dark:hover:bg-zinc-700/60 transition-colors text-left"
+              data-action="insertElement"
+              data-value="callout"
+            >
+              <span class="flex items-center gap-2">
+                <span class="material-symbols-outlined text-[18px]">campaign</span>
+                Alerta GitHub
+              </span>
+            </button>
+            <button
+              role="menuitem"
+              class="dropdown-item @[520px]:hidden w-full flex items-center justify-between px-3 py-1.5 hover:bg-zinc-100 dark:hover:bg-zinc-700/60 transition-colors text-left"
+              data-action="insertElement"
+              data-value="table"
+            >
+              <span class="flex items-center gap-2">
+                <span class="material-symbols-outlined text-[18px]">table_chart</span>
+                Tabla
+              </span>
+            </button>
+            <button
+              role="menuitem"
+              class="dropdown-item @[520px]:hidden w-full flex items-center justify-between px-3 py-1.5 hover:bg-zinc-100 dark:hover:bg-zinc-700/60 transition-colors text-left"
+              data-action="insertElement"
+              data-value="math"
+            >
+              <span class="flex items-center gap-2">
+                <span class="material-symbols-outlined text-[18px]">functions</span>
+                Ecuación KaTeX
+              </span>
+            </button>
+            <button
+              role="menuitem"
+              class="dropdown-item @[520px]:hidden w-full flex items-center justify-between px-3 py-1.5 hover:bg-zinc-100 dark:hover:bg-zinc-700/60 transition-colors text-left"
+              data-action="insertElement"
+              data-value="footnote"
+            >
+              <span class="flex items-center gap-2">
+                <span class="material-symbols-outlined text-[18px]">bookmark</span>
+                Nota al pie
+              </span>
+            </button>
+            <button
+              role="menuitem"
+              class="dropdown-item @[520px]:hidden w-full flex items-center justify-between px-3 py-1.5 hover:bg-zinc-100 dark:hover:bg-zinc-700/60 transition-colors text-left"
+              data-action="insertElement"
+              data-value="divider"
+            >
+              <span class="flex items-center gap-2">
+                <span class="material-symbols-outlined text-[18px]">horizontal_rule</span>
+                Línea divisoria
+              </span>
             </button>
           </div>
         </div>
@@ -273,7 +360,7 @@ export function renderFormattingTools() {
             role="menu"
             aria-orientation="vertical"
             aria-label="Estilos de lista"
-            class="dropdown-menu hidden absolute top-full left-0 mt-1 z-50 w-56 bg-white dark:bg-zinc-800 border border-zinc-200/80 dark:border-zinc-700/80 rounded shadow-xl py-1 font-mono text-xs text-zinc-700 dark:text-zinc-200"
+            class="dropdown-menu hidden absolute top-full left-0 mt-1 z-50 w-60 bg-white dark:bg-zinc-800 border border-zinc-200/80 dark:border-zinc-700/80 rounded shadow-xl py-1 font-mono text-xs text-zinc-700 dark:text-zinc-200"
           >
             <button
               role="menuitem"
@@ -309,6 +396,26 @@ export function renderFormattingTools() {
                 >Ctrl+Shift+N</span
               >
             </button>
+            <button
+              role="menuitem"
+              class="dropdown-item w-full flex items-center justify-between px-3 py-1.5 hover:bg-zinc-100 dark:hover:bg-zinc-700/60 transition-colors text-left"
+              data-action="listStyle"
+              data-value="task"
+            >
+              <span class="flex items-center gap-2">
+                <span class="material-symbols-outlined text-[18px]"
+                  >check_box</span
+                >
+                Lista de tareas
+              </span>
+              <div class="flex items-center gap-1.5">
+                <span class="text-[9px] font-mono px-1 py-0.5 rounded bg-zinc-100 dark:bg-zinc-700 text-zinc-500 dark:text-zinc-400">GFM</span>
+                <span
+                  class="text-[10px] text-zinc-500 dark:text-zinc-400 font-mono"
+                  >Ctrl+Shift+T</span
+                >
+              </div>
+            </button>
           </div>
         </div>
 
@@ -337,7 +444,7 @@ export function renderFormattingTools() {
             role="menu"
             aria-orientation="vertical"
             aria-label="Insertar elementos"
-            class="dropdown-menu hidden absolute top-full left-0 mt-1 z-50 w-60 bg-white dark:bg-zinc-800 border border-zinc-200/80 dark:border-zinc-700/80 rounded shadow-xl py-1 font-mono text-xs text-zinc-700 dark:text-zinc-200"
+            class="dropdown-menu hidden absolute top-full left-0 mt-1 z-50 w-64 bg-white dark:bg-zinc-800 border border-zinc-200/80 dark:border-zinc-700/80 rounded shadow-xl py-1 font-mono text-xs text-zinc-700 dark:text-zinc-200"
           >
             <button
               role="menuitem"
@@ -353,7 +460,7 @@ export function renderFormattingTools() {
               </span>
               <span
                 class="text-[10px] text-zinc-500 dark:text-zinc-400 font-mono"
-                >Ctrl+Alt+4</span
+                >Ctrl+K</span
               >
             </button>
             <button
@@ -366,7 +473,7 @@ export function renderFormattingTools() {
                 <span class="material-symbols-outlined text-[18px]"
                   >code_blocks</span
                 >
-                Fragmento de código
+                Bloque de código
               </span>
               <span
                 class="text-[10px] text-zinc-500 dark:text-zinc-400 font-mono"
@@ -388,6 +495,88 @@ export function renderFormattingTools() {
               <span
                 class="text-[10px] text-zinc-500 dark:text-zinc-400 font-mono"
                 >Ctrl+Alt+6</span
+              >
+            </button>
+            <button
+              role="menuitem"
+              class="dropdown-item w-full flex items-center justify-between px-3 py-1.5 hover:bg-zinc-100 dark:hover:bg-zinc-700/60 transition-colors text-left"
+              data-action="insertElement"
+              data-value="callout"
+            >
+              <span class="flex items-center gap-2">
+                <span class="material-symbols-outlined text-[18px]"
+                  >campaign</span
+                >
+                Alerta GitHub
+              </span>
+              <span class="text-[9px] font-mono px-1 py-0.5 rounded bg-zinc-100 dark:bg-zinc-700 text-zinc-500 dark:text-zinc-400">GFM</span>
+            </button>
+            <button
+              role="menuitem"
+              class="dropdown-item w-full flex items-center justify-between px-3 py-1.5 hover:bg-zinc-100 dark:hover:bg-zinc-700/60 transition-colors text-left"
+              data-action="insertElement"
+              data-value="table"
+            >
+              <span class="flex items-center gap-2">
+                <span class="material-symbols-outlined text-[18px]"
+                  >table_chart</span
+                >
+                Tabla
+              </span>
+              <span class="text-[9px] font-mono px-1 py-0.5 rounded bg-zinc-100 dark:bg-zinc-700 text-zinc-500 dark:text-zinc-400">GFM</span>
+            </button>
+            <button
+              role="menuitem"
+              class="dropdown-item w-full flex items-center justify-between px-3 py-1.5 hover:bg-zinc-100 dark:hover:bg-zinc-700/60 transition-colors text-left"
+              data-action="insertElement"
+              data-value="math"
+            >
+              <span class="flex items-center gap-2">
+                <span class="material-symbols-outlined text-[18px]"
+                  >functions</span
+                >
+                Ecuación KaTeX
+              </span>
+              <div class="flex items-center gap-1.5">
+                <span class="text-[9px] font-mono px-1 py-0.5 rounded bg-zinc-100 dark:bg-zinc-700 text-zinc-500 dark:text-zinc-400">LaTeX</span>
+                <span
+                  class="text-[10px] text-zinc-500 dark:text-zinc-400 font-mono"
+                  >Ctrl+Shift+E</span
+                >
+              </div>
+            </button>
+            <button
+              role="menuitem"
+              class="dropdown-item w-full flex items-center justify-between px-3 py-1.5 hover:bg-zinc-100 dark:hover:bg-zinc-700/60 transition-colors text-left"
+              data-action="insertElement"
+              data-value="footnote"
+            >
+              <span class="flex items-center gap-2">
+                <span class="material-symbols-outlined text-[18px]"
+                  >bookmark</span
+                >
+                Nota al pie
+              </span>
+              <span class="text-[9px] font-mono px-1 py-0.5 rounded bg-zinc-100 dark:bg-zinc-700 text-zinc-500 dark:text-zinc-400">Acad</span>
+            </button>
+            <div
+              class="my-1 border-t border-zinc-200/60 dark:border-zinc-700/60"
+            ></div>
+            <button
+              role="menuitem"
+              class="dropdown-item w-full flex items-center justify-between px-3 py-1.5 hover:bg-zinc-100 dark:hover:bg-zinc-700/60 transition-colors text-left"
+              data-action="insertElement"
+              data-value="divider"
+            >
+              <span class="flex items-center gap-2">
+                <span class="material-symbols-outlined text-[18px]"
+                  >horizontal_rule</span
+                >
+                Línea divisoria
+              </span>
+              <span
+                class="text-[10px] text-zinc-500 dark:text-zinc-400 font-mono"
+                >---</span
               >
             </button>
           </div>

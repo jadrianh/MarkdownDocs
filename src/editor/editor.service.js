@@ -91,7 +91,8 @@ export const EditorService = {
             .replace(/~~(.*?)~~/g, '$1')
             .replace(/`([^`\n]+)`/g, '$1')
             .replace(/\*(.*?)\*/g, '$1')
-            .replace(/_(.*?)_/g, '$1');
+            .replace(/_(.*?)_/g, '$1')
+            .replace(/\$([^$\n]+)\$/g, '$1');
 
         const newText = text.substring(0, start) + cleaned + text.substring(end);
         textarea.value = newText;
@@ -121,8 +122,13 @@ export const EditorService = {
             const leadingWs = leadingWsMatch ? leadingWsMatch[0] : '';
             const lineWithoutIndent = line.substring(leadingWs.length);
 
-            const clean = lineWithoutIndent.replace(/^(- |\* |\d+\. )/, ''); 
-            const prefix = listType === 'ordered' ? `${counter++}. ` : '- ';
+            const clean = lineWithoutIndent.replace(/^(- \[[ xX]\] |- |\* |\d+\. )/, ''); 
+            let prefix = '- ';
+            if (listType === 'ordered') {
+                prefix = `${counter++}. `;
+            } else if (listType === 'task') {
+                prefix = '- [ ] ';
+            }
 
             return `${leadingWs}${prefix}${clean}`;
         });
@@ -208,6 +214,149 @@ export const EditorService = {
         textarea.value = newText;
         textarea.selectionStart = lineStart;
         textarea.selectionEnd = lineStart + newBlock.length;
+
+        return newText;
+    },
+
+    insertCallout(textarea, type = 'NOTE') {
+        const start = textarea.selectionStart;
+        const end = textarea.selectionEnd;
+        const text = textarea.value;
+        const selection = text.substring(start, end);
+
+        const alertType = (type || 'NOTE').toUpperCase();
+        const placeholder = 'Escribe el contenido de la alerta aquí.';
+        const contentLines = selection ? selection.split('\n') : [placeholder];
+        const formattedContent = contentLines.map(line => `> ${line.replace(/^>\s*/, '')}`).join('\n');
+        const calloutBlock = `> [!${alertType}]\n${formattedContent}`;
+
+        const needsLeadingNewline = start > 0 && text[start - 1] !== '\n';
+        const prefix = needsLeadingNewline ? '\n\n' : '';
+        const needsTrailingNewline = end < text.length && text[end] !== '\n';
+        const suffix = needsTrailingNewline ? '\n\n' : '\n';
+
+        const fullInsertion = prefix + calloutBlock + suffix;
+        const newText = text.substring(0, start) + fullInsertion + text.substring(end);
+
+        textarea.value = newText;
+        if (!selection) {
+            const placeholderStart = start + prefix.length + `> [!${alertType}]\n> `.length;
+            textarea.selectionStart = placeholderStart;
+            textarea.selectionEnd = placeholderStart + placeholder.length;
+        } else {
+            textarea.selectionStart = start + prefix.length;
+            textarea.selectionEnd = start + prefix.length + calloutBlock.length;
+        }
+
+        return newText;
+    },
+
+    insertTable(textarea, rows = 2, cols = 3) {
+        const start = textarea.selectionStart;
+        const end = textarea.selectionEnd;
+        const text = textarea.value;
+
+        const colHeaders = Array.from({ length: cols }, (_, i) => `Encabezado ${i + 1}`);
+        const separator = Array.from({ length: cols }, () => '------------');
+        const headerRow = `| ${colHeaders.join(' | ')} |`;
+        const separatorRow = `| ${separator.join(' | ')} |`;
+
+        const dataRows = Array.from({ length: rows }, (_, r) => {
+            const cells = Array.from({ length: cols }, (_, c) => `Celda ${r * cols + c + 1}`);
+            return `| ${cells.join(' | ')} |`;
+        });
+
+        const tableMD = `${headerRow}\n${separatorRow}\n${dataRows.join('\n')}`;
+
+        const needsLeadingNewline = start > 0 && text[start - 1] !== '\n';
+        const prefix = needsLeadingNewline ? '\n\n' : '';
+        const needsTrailingNewline = end < text.length && text[end] !== '\n';
+        const suffix = needsTrailingNewline ? '\n\n' : '\n';
+
+        const fullInsertion = prefix + tableMD + suffix;
+        const newText = text.substring(0, start) + fullInsertion + text.substring(end);
+
+        textarea.value = newText;
+        const firstHeaderStart = start + prefix.length + 2;
+        textarea.selectionStart = firstHeaderStart;
+        textarea.selectionEnd = firstHeaderStart + colHeaders[0].length;
+
+        return newText;
+    },
+
+    insertMath(textarea, isBlock = false) {
+        const start = textarea.selectionStart;
+        const end = textarea.selectionEnd;
+        const text = textarea.value;
+        const selection = text.substring(start, end);
+
+        if (isBlock || (selection && selection.includes('\n'))) {
+            const formula = selection || 'E = mc^2';
+            const blockContent = `$$\n${formula}\n$$`;
+            const needsLeadingNewline = start > 0 && text[start - 1] !== '\n';
+            const prefix = needsLeadingNewline ? '\n\n' : '';
+            const needsTrailingNewline = end < text.length && text[end] !== '\n';
+            const suffix = needsTrailingNewline ? '\n\n' : '\n';
+
+            const fullBlock = prefix + blockContent + suffix;
+            const newText = text.substring(0, start) + fullBlock + text.substring(end);
+            textarea.value = newText;
+            if (!selection) {
+                const formulaStart = start + prefix.length + 3;
+                textarea.selectionStart = formulaStart;
+                textarea.selectionEnd = formulaStart + formula.length;
+            } else {
+                textarea.selectionStart = start + prefix.length;
+                textarea.selectionEnd = start + prefix.length + blockContent.length;
+            }
+            return newText;
+        }
+
+        // Inline math
+        return this.toggleStyle(textarea, '$', '$');
+    },
+
+    insertFootnote(textarea) {
+        const start = textarea.selectionStart;
+        const end = textarea.selectionEnd;
+        const text = textarea.value;
+        const selection = text.substring(start, end);
+
+        const existingRefs = [...text.matchAll(/\[\^(\d+)\]/g)].map(m => parseInt(m[1], 10));
+        const nextIndex = existingRefs.length > 0 ? Math.max(...existingRefs) + 1 : 1;
+
+        const refText = `[^${nextIndex}]`;
+        const noteContent = selection || 'Texto explicativo de la nota.';
+        const defText = `\n\n[^${nextIndex}]: ${noteContent}`;
+
+        const textWithRef = text.substring(0, start) + refText + text.substring(end);
+        const trimmed = textWithRef.trimEnd();
+        const newText = trimmed + defText + '\n';
+
+        textarea.value = newText;
+        if (selection) {
+            textarea.selectionStart = textarea.selectionEnd = start + refText.length;
+        } else {
+            const defPos = trimmed.length + `\n\n[^${nextIndex}]: `.length;
+            textarea.selectionStart = defPos;
+            textarea.selectionEnd = defPos + noteContent.length;
+        }
+
+        return newText;
+    },
+
+    insertDivider(textarea) {
+        const start = textarea.selectionStart;
+        const end = textarea.selectionEnd;
+        const text = textarea.value;
+
+        const needsLeadingNewline = start > 0 && text[start - 1] !== '\n';
+        const prefix = needsLeadingNewline ? '\n\n' : '';
+        const divider = `${prefix}---\n\n`;
+        const newText = text.substring(0, start) + divider + text.substring(end);
+
+        textarea.value = newText;
+        textarea.selectionStart = textarea.selectionEnd = start + divider.length;
 
         return newText;
     },

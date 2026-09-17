@@ -107,12 +107,14 @@ export function initEditorController() {
             if (e.key === '6' || e.code === 'Digit6') { e.preventDefault(); insertElementAction('quote'); return; }
         }
 
-        // Más formatos & Listas (Ctrl+Shift+N)
+        // Más formatos & Listas & Ecuación (Ctrl+Shift+N)
         if (isCtrlOrCmd && !isAlt && isShift) {
             if (key === 's') { e.preventDefault(); moreFormatAction('strikethrough'); return; }
             if (key === 'm') { e.preventDefault(); moreFormatAction('code'); return; }
             if (key === 'l') { e.preventDefault(); listStyleAction('unordered'); return; }
             if (key === 'n') { e.preventDefault(); listStyleAction('ordered'); return; }
+            if (key === 't') { e.preventDefault(); listStyleAction('task'); return; }
+            if (key === 'e') { e.preventDefault(); insertElementAction('math'); return; }
         }
 
         // Borrar formato (Ctrl+\)
@@ -122,10 +124,11 @@ export function initEditorController() {
             return;
         }
 
-        // Negrita (Ctrl+B) y Cursiva (Ctrl+I)
+        // Negrita (Ctrl+B), Cursiva (Ctrl+I), Enlace (Ctrl+K)
         if (isCtrlOrCmd && !isAlt && !isShift) {
             if (key === 'b') { e.preventDefault(); triggerEditorAction('**', '**'); return; }
             if (key === 'i') { e.preventDefault(); triggerEditorAction('*', '*'); return; }
+            if (key === 'k') { e.preventDefault(); insertElementAction('link'); return; }
         }
     });
 
@@ -319,6 +322,16 @@ function insertElementAction(type) {
         EditorService.insertCodeBlock(editor);
     } else if (type === 'quote') {
         EditorService.insertQuote(editor);
+    } else if (type === 'callout') {
+        EditorService.insertCallout(editor);
+    } else if (type === 'table') {
+        EditorService.insertTable(editor);
+    } else if (type === 'math') {
+        EditorService.insertMath(editor);
+    } else if (type === 'footnote') {
+        EditorService.insertFootnote(editor);
+    } else if (type === 'divider') {
+        EditorService.insertDivider(editor);
     }
     dispatchEditorChange();
 }

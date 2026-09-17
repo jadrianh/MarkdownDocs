@@ -52,7 +52,7 @@ describe('EditorService & State', () => {
         expect(textarea.value).toBe('Texto con negrita y cursiva y codigo');
     });
 
-    it('creates bullet and numbered lists', () => {
+    it('creates bullet, numbered, and task lists', () => {
         textarea.value = 'Linea 1\nLinea 2';
         textarea.selectionStart = 0;
         textarea.selectionEnd = textarea.value.length;
@@ -62,6 +62,67 @@ describe('EditorService & State', () => {
 
         EditorService.makeList(textarea, 'ordered');
         expect(textarea.value).toBe('1. Linea 1\n2. Linea 2');
+
+        EditorService.makeList(textarea, 'task');
+        expect(textarea.value).toBe('- [ ] Linea 1\n- [ ] Linea 2');
+    });
+
+    it('inserts callout block correctly', () => {
+        textarea.value = 'Nota importante';
+        textarea.selectionStart = 0;
+        textarea.selectionEnd = textarea.value.length;
+
+        EditorService.insertCallout(textarea, 'TIP');
+        expect(textarea.value).toContain('> [!TIP]');
+        expect(textarea.value).toContain('> Nota importante');
+    });
+
+    it('inserts markdown table structure', () => {
+        textarea.value = '';
+        textarea.selectionStart = 0;
+        textarea.selectionEnd = 0;
+
+        EditorService.insertTable(textarea, 2, 3);
+        expect(textarea.value).toContain('| Encabezado 1 | Encabezado 2 | Encabezado 3 |');
+        expect(textarea.value).toContain('| ------------ | ------------ | ------------ |');
+        expect(textarea.value).toContain('| Celda 1 | Celda 2 | Celda 3 |');
+    });
+
+    it('inserts math equations for inline and block', () => {
+        // Inline math
+        textarea.value = 'E = mc^2';
+        textarea.selectionStart = 0;
+        textarea.selectionEnd = textarea.value.length;
+
+        EditorService.insertMath(textarea);
+        expect(textarea.value).toBe('$E = mc^2$');
+
+        // Block math
+        textarea.value = 'x + y = z\na + b = c';
+        textarea.selectionStart = 0;
+        textarea.selectionEnd = textarea.value.length;
+
+        EditorService.insertMath(textarea, true);
+        expect(textarea.value).toContain('$$\nx + y = z\na + b = c\n$$');
+    });
+
+    it('inserts footnote reference and appends definition', () => {
+        textarea.value = 'Texto con referencia';
+        textarea.selectionStart = textarea.value.length;
+        textarea.selectionEnd = textarea.value.length;
+
+        EditorService.insertFootnote(textarea);
+        expect(textarea.value).toContain('Texto con referencia[^1]');
+        expect(textarea.value).toContain('[^1]: Texto explicativo de la nota.');
+    });
+
+    it('inserts horizontal divider', () => {
+        textarea.value = 'Seccion 1';
+        textarea.selectionStart = textarea.value.length;
+        textarea.selectionEnd = textarea.value.length;
+
+        EditorService.insertDivider(textarea);
+        expect(textarea.value).toContain('Seccion 1\n\n---\n\n');
     });
 
     it('parses markdown to HTML safely', () => {
