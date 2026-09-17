@@ -47,7 +47,7 @@ test.describe('Split View (Vista Dividida) con Renderizado Simultáneo y Botones
     await expect(preview).toBeVisible();
     await expect(splitDivider).toBeVisible();
     await expect(previewSplitHeader).toBeVisible();
-    await expect(page.locator('#previewLiveBadge')).toContainText('EN VIVO');
+    await expect(previewSplitHeader).toContainText('Vista previa');
 
     // Botón 2 se activa (como toggleSidebarBtn)
     await expect(toggleSplitBtn).toHaveAttribute('aria-pressed', 'true');

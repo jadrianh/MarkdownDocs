@@ -20,10 +20,6 @@ export function renderPreviewPane() {
             <span class="material-symbols-outlined text-[15px] text-primary">visibility</span>
             Vista previa
           </span>
-          <span id="previewLiveBadge" class="flex items-center gap-1 text-[10px] font-semibold text-emerald-600 dark:text-emerald-400">
-            <span class="inline-block w-1.5 h-1.5 rounded-full bg-emerald-500 animate-pulse"></span>
-            EN VIVO
-          </span>
         </div>
 
         <!-- Preview Panel -->
