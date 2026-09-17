@@ -19,7 +19,7 @@ import {
     PreferencesModalView
 } from '../components/index.js';
 
-document.addEventListener('DOMContentLoaded', () => {
+function bootstrap() {
     // 1. Montar componentes estructurales
     const toastRoot = document.getElementById('app-toast-root');
     if (toastRoot) {
@@ -73,4 +73,10 @@ document.addEventListener('DOMContentLoaded', () => {
     initParserController();
     initOutlineController();
     initFindReplaceController();
-});
+}
+
+if (document.readyState === 'loading') {
+    document.addEventListener('DOMContentLoaded', bootstrap);
+} else {
+    bootstrap();
+}
