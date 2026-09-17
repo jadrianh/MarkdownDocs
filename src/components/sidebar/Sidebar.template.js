@@ -21,65 +21,58 @@ export function renderSidebar() {
         class="w-80 flex flex-col bg-zinc-50 dark:bg-zinc-800 shrink-0 border-l border-zinc-200/60 dark:border-zinc-700/50"
         data-purpose="suggestions-sidebar"
       >
-        <!-- Sidebar Header with Switch: Sugerencias / Estructura + Botón Ocultar Panel -->
+        <!-- Sidebar Header: Título activo (inicia en ANÁLISIS) + Botón minimalista de cambio + Botón ocultar -->
         <div
-          class="flex items-center justify-between px-2.5 py-1.5 border-b border-zinc-200/60 dark:border-zinc-700/50 h-10 shrink-0 bg-white dark:bg-zinc-800 gap-2"
+          class="flex items-center justify-between px-3.5 py-2 border-b border-zinc-200/60 dark:border-zinc-700/50 h-10 shrink-0 bg-white dark:bg-zinc-800 select-none"
         >
-          <!-- Switch de 2 posiciones: Sugerencias / Estructura -->
-          <div
-            id="sidebarSwitch"
-            role="tablist"
-            aria-label="Cambiar entre sugerencias y estructura"
-            class="flex-1 flex items-center bg-zinc-100 dark:bg-zinc-900/70 p-0.5 rounded-lg border border-zinc-200/80 dark:border-zinc-700/80 text-xs font-mono select-none"
-          >
-            <!-- Opción 1: Sugerencias -->
-            <button
-              id="tabSuggestionsBtn"
-              type="button"
-              role="tab"
-              aria-selected="true"
-              aria-controls="resultsPanel"
-              class="flex-1 flex items-center justify-center gap-1.5 py-1 px-2 rounded-md text-xs font-semibold tracking-wide transition-all shadow-xs bg-white dark:bg-zinc-800 text-primary"
-              title="Ver sugerencias ortográficas y gramaticales"
+          <!-- Sección Activa (Título, Icono y Badge) -->
+          <div class="flex items-center gap-2 min-w-0">
+            <h2
+              class="text-xs font-bold tracking-wider text-zinc-700 dark:text-zinc-300 flex items-center gap-1.5 uppercase"
             >
-              <span class="material-symbols-outlined text-[16px]">auto_awesome</span>
-              <span>Sugerencias</span>
               <span
-                id="suggestionsBadge"
-                class="hidden px-1.5 py-0.2 text-[10px] font-mono font-bold bg-primary text-white rounded-full ml-0.5"
-                >0</span
+                id="sidebarTitleIcon"
+                class="material-symbols-outlined text-primary text-[20px] shrink-0"
+                >auto_awesome</span
               >
-            </button>
-
-            <!-- Opción 2: Estructura -->
-            <button
-              id="tabOutlineBtn"
-              type="button"
-              role="tab"
-              aria-selected="false"
-              aria-controls="outlinePanel"
-              class="flex-1 flex items-center justify-center gap-1.5 py-1 px-2 rounded-md text-xs font-medium tracking-wide transition-all text-zinc-500 hover:text-zinc-800 dark:text-zinc-400 dark:hover:text-zinc-200"
-              title="Ver estructura y esquema de encabezados"
+              <span id="sidebarTitleText">ANÁLISIS</span>
+            </h2>
+            <span
+              id="suggestionsBadge"
+              class="hidden px-1.5 py-0.5 text-[10px] font-mono font-bold bg-primary/15 text-primary rounded-full shrink-0"
+              >0</span
             >
-              <span class="material-symbols-outlined text-[16px]">toc</span>
-              <span>Estructura</span>
-              <span
-                id="outlineBadge"
-                class="hidden px-1.5 py-0.2 text-[10px] font-mono font-bold bg-zinc-200 dark:bg-zinc-700 text-zinc-700 dark:text-zinc-300 rounded-full ml-0.5"
-                >0</span
-              >
-            </button>
+            <span
+              id="outlineBadge"
+              class="hidden px-1.5 py-0.5 text-[10px] font-mono font-bold bg-zinc-200 dark:bg-zinc-700 text-zinc-700 dark:text-zinc-300 rounded-full shrink-0"
+              >0</span
+            >
           </div>
 
-          <!-- Botón Ocultar Panel -->
-          <button
-            id="closeSidebarBtn"
-            aria-label="Ocultar panel"
-            class="flex items-center justify-center w-7 h-7 hover:bg-zinc-100 dark:hover:bg-zinc-700 rounded text-zinc-400 hover:text-zinc-700 dark:hover:text-zinc-200 transition-colors shrink-0"
-            title="Ocultar panel"
-          >
-            <span class="material-symbols-outlined text-[18px]">chevron_right</span>
-          </button>
+          <!-- Acciones de Cabecera -->
+          <div class="flex items-center gap-1 shrink-0">
+            <button
+              id="switchSidebarTabBtn"
+              type="button"
+              aria-label="Ver estructura"
+              title="Ver estructura (Ctrl+Shift+O)"
+              class="flex items-center justify-center w-7 h-7 hover:bg-zinc-100 dark:hover:bg-zinc-700/60 rounded text-zinc-500 hover:text-zinc-900 dark:text-zinc-400 dark:hover:text-zinc-100 transition-colors"
+            >
+              <span
+                id="switchSidebarTabIcon"
+                class="material-symbols-outlined text-[18px]"
+                >list_arrow</span
+              >
+            </button>
+            <button
+              id="closeSidebarBtn"
+              aria-label="Ocultar panel"
+              class="flex items-center justify-center w-7 h-7 hover:bg-zinc-100 dark:hover:bg-zinc-700/60 rounded text-zinc-400 hover:text-zinc-700 dark:hover:text-zinc-200 transition-colors"
+              title="Ocultar panel"
+            >
+              <span class="material-symbols-outlined text-[18px]">chevron_right</span>
+            </button>
+          </div>
         </div>
 
         <!-- Sidebar Content Panels -->

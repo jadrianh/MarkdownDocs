@@ -38,6 +38,7 @@ export function initOutlineController() {
     const editor = document.getElementById('editor');
     const outlinePanel = document.getElementById('outlinePanel');
     const previewPanel = document.getElementById('previewPanel');
+    const switchSidebarTabBtn = document.getElementById('switchSidebarTabBtn');
     const tabSuggestionsBtn = document.getElementById('tabSuggestionsBtn');
     const tabOutlineBtn = document.getElementById('tabOutlineBtn');
     const toggleOutlineBtn = document.getElementById('toggleOutlineBtn');
@@ -55,13 +56,19 @@ export function initOutlineController() {
         }, 150);
     });
 
-    // Clic en pestaña Sugerencias
+    // Clic en el botón minimalista de alternancia (Análisis <-> Estructura)
+    switchSidebarTabBtn?.addEventListener('click', (e) => {
+        e.stopPropagation();
+        toggleOutlineTab();
+    });
+
+    // Clic en pestaña Sugerencias (compatibilidad retroactiva)
     tabSuggestionsBtn?.addEventListener('click', (e) => {
         e.stopPropagation();
         OutlineView.switchTab('suggestions');
     });
 
-    // Clic en pestaña Estructura
+    // Clic en pestaña Estructura (compatibilidad retroactiva)
     tabOutlineBtn?.addEventListener('click', (e) => {
         e.stopPropagation();
         openOutlineTab();

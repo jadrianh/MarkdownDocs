@@ -4,6 +4,7 @@ import { GrammarView } from './grammar.view.js';
 import { EditorView } from '../../editor/editor.view.js';
 import { ToastView } from '../../ui/toast.view.js';
 import { closeAllDropdowns } from '../../ui/dropdown.util.js';
+import { OutlineView } from '../../editor/outline/outline.view.js';
 
 export function initGrammarController() {
     const analyzeBtn = document.getElementById('analyzeBtn');
@@ -89,6 +90,7 @@ export function initGrammarController() {
             state.setSidebarOpen(true);
             GrammarView.updateSidebarUI(true);
         }
+        OutlineView.switchTab('suggestions');
 
         isAnalyzing = true;
         analyzeBtn?.setAttribute('disabled', 'true');

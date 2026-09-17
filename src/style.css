@@ -511,6 +511,171 @@ html.black-mode .suggestion-context {
 }
 
 /* ==========================================================================
+   Affordancias Interactivas y Estados de Botones (WCAG AA & Micro-interacciones)
+   ========================================================================== */
+
+/* 1. Cursor de puntero universal para todos los botones interactivos */
+button:not(:disabled),
+[role="button"]:not([aria-disabled="true"]),
+.dropdown-trigger,
+.cursor-pointer,
+select,
+summary {
+  cursor: pointer !important;
+}
+
+/* 2. Cursor deshabilitado explícito (evita clics confusos) */
+button:disabled,
+button[disabled],
+[role="button"][aria-disabled="true"],
+.is-disabled {
+  cursor: not-allowed !important;
+  opacity: 0.45 !important;
+  pointer-events: auto !important;
+  transform: none !important;
+  box-shadow: none !important;
+}
+
+/* 3. Comportamiento base y transiciones suaves para todos los botones */
+button,
+[role="button"] {
+  touch-action: manipulation;
+  -webkit-tap-highlight-color: transparent;
+  user-select: none;
+  transition: background-color 0.16s cubic-bezier(0.16, 1, 0.3, 1),
+              color 0.16s cubic-bezier(0.16, 1, 0.3, 1),
+              border-color 0.16s cubic-bezier(0.16, 1, 0.3, 1),
+              box-shadow 0.16s cubic-bezier(0.16, 1, 0.3, 1),
+              transform 0.14s cubic-bezier(0.16, 1, 0.3, 1),
+              opacity 0.16s ease;
+}
+
+/* 4. Efecto de pulsabilidad en hover (elevación sutil y feedback de luz) */
+button:not(:disabled):hover,
+[role="button"]:not([aria-disabled="true"]):hover {
+  transform: translateY(-0.5px);
+}
+
+/* 5. Feedback táctil y físico al hacer clic (:active) */
+button:not(:disabled):active,
+[role="button"]:not([aria-disabled="true"]):active {
+  transform: translateY(0.5px) scale(0.96) !important;
+  transition-duration: 0.05s !important;
+}
+
+/* 6. Anillo de foco accesible para teclado (WCAG 2.4.7) */
+button:focus-visible,
+[role="button"]:focus-visible,
+a:focus-visible,
+select:focus-visible {
+  outline: 2px solid rgb(var(--primary-rgb) / 0.75) !important;
+  outline-offset: 2px !important;
+}
+
+/* 7. Botones de barra de herramientas (Toolbar Icons & Utility Actions) */
+#app-workspace-root section > div:first-child button:not(:disabled):hover {
+  color: rgb(var(--primary-rgb));
+  background-color: rgb(var(--primary-rgb) / 0.12);
+}
+
+#app-workspace-root section > div:first-child button:not(:disabled):hover .material-symbols-outlined {
+  color: rgb(var(--primary-rgb));
+}
+
+.dark #app-workspace-root section > div:first-child button:not(:disabled):hover {
+  background-color: rgb(var(--primary-rgb) / 0.2);
+  color: rgb(var(--primary-rgb));
+}
+
+html.black-mode #app-workspace-root section > div:first-child button:not(:disabled):hover {
+  background-color: rgb(var(--primary-rgb) / 0.25);
+  color: rgb(var(--primary-rgb));
+}
+
+/* 8. Botones de cabecera de sidebar y acciones flotantes */
+#switchSidebarTabBtn:not(:disabled):hover,
+#closeSidebarBtn:not(:disabled):hover,
+#findToggleReplaceBtn:not(:disabled):hover,
+#closePreferencesBtn:not(:disabled):hover {
+  color: rgb(var(--primary-rgb));
+  background-color: rgb(var(--primary-rgb) / 0.1);
+}
+
+#switchSidebarTabBtn:not(:disabled):hover .material-symbols-outlined,
+#closeSidebarBtn:not(:disabled):hover .material-symbols-outlined {
+  color: rgb(var(--primary-rgb));
+}
+
+.dark #switchSidebarTabBtn:not(:disabled):hover,
+.dark #closeSidebarBtn:not(:disabled):hover {
+  background-color: rgb(var(--primary-rgb) / 0.18);
+}
+
+/* 9. Elementos de menú desplegable interactivos */
+.dropdown-menu button,
+.dropdown-menu [role="option"],
+.dropdown-menu [role="menuitem"],
+.dropdown-item,
+.dropdown-lang-item {
+  cursor: pointer !important;
+  transition: background-color 0.12s ease, color 0.12s ease;
+}
+
+.dropdown-menu button:hover,
+.dropdown-menu [role="option"]:hover,
+.dropdown-menu [role="menuitem"]:hover,
+.dropdown-item:hover,
+.dropdown-lang-item:hover {
+  background-color: rgb(var(--primary-rgb) / 0.1) !important;
+  color: rgb(var(--primary-rgb)) !important;
+}
+
+/* 10. Botones de opciones de tema y fuentes en modal */
+.theme-option-btn,
+.flavor-option-btn {
+  cursor: pointer !important;
+  transition: all 0.18s cubic-bezier(0.16, 1, 0.3, 1) !important;
+}
+
+.theme-option-btn:hover,
+.flavor-option-btn:hover {
+  border-color: rgb(var(--primary-rgb) / 0.5) !important;
+  transform: translateY(-1px) !important;
+  box-shadow: 0 4px 12px -2px rgb(0 0 0 / 0.08) !important;
+}
+
+/* 11. Botones de colores circulares en preferencias */
+.color-btn {
+  cursor: pointer !important;
+  transition: transform 0.16s cubic-bezier(0.16, 1, 0.3, 1), box-shadow 0.16s ease !important;
+}
+
+.color-btn:hover {
+  transform: scale(1.18) !important;
+  box-shadow: 0 3px 10px rgba(0, 0, 0, 0.28) !important;
+}
+
+.color-btn:active {
+  transform: scale(1.02) !important;
+}
+
+/* 12. Tarjetas y sugerencias clickeables */
+.suggestion-card {
+  cursor: pointer !important;
+  transition: transform 0.15s ease, border-color 0.15s ease, box-shadow 0.15s ease;
+}
+
+.suggestion-card:hover {
+  transform: translateY(-1px);
+  border-color: rgb(var(--primary-rgb) / 0.5) !important;
+  box-shadow: 0 4px 12px -2px rgb(0 0 0 / 0.08);
+}
+
+:is(.dark) .suggestion-card:hover {
+  box-shadow: 0 4px 14px -2px rgb(0 0 0 / 0.4);
+}
+
+/* ==========================================================================
    Top Navigation Bar: Dinamismo, Contraste y Colores de Acento
    ========================================================================== */
 

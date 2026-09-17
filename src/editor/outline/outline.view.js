@@ -34,9 +34,12 @@ export const OutlineView = {
         this.elements = {
             outlinePanel: document.getElementById('outlinePanel'),
             outlineBadge: document.getElementById('outlineBadge'),
+            suggestionsBadge: document.getElementById('suggestionsBadge'),
             resultsPanel: document.getElementById('resultsPanel'),
-            tabSuggestionsBtn: document.getElementById('tabSuggestionsBtn'),
-            tabOutlineBtn: document.getElementById('tabOutlineBtn'),
+            sidebarTitleIcon: document.getElementById('sidebarTitleIcon'),
+            sidebarTitleText: document.getElementById('sidebarTitleText'),
+            switchSidebarTabBtn: document.getElementById('switchSidebarTabBtn'),
+            switchSidebarTabIcon: document.getElementById('switchSidebarTabIcon'),
             toggleOutlineBtn: document.getElementById('toggleOutlineBtn'),
             toggleOutlineIcon: document.getElementById('toggleOutlineIcon')
         };
@@ -59,7 +62,7 @@ export const OutlineView = {
             outlinePanel.innerHTML = `
                 <div id="outlineEmptyState" class="flex flex-col items-center justify-center text-center p-6 h-full font-mono text-xs">
                     <div class="w-12 h-12 bg-zinc-100 dark:bg-zinc-800/60 rounded-full flex items-center justify-center mb-3 text-zinc-400 dark:text-zinc-500 border border-zinc-200/60 dark:border-zinc-700/50">
-                        <span class="material-symbols-outlined text-[24px]">toc</span>
+                        <span class="material-symbols-outlined text-[24px]">list_arrow</span>
                     </div>
                     <p class="font-sans font-semibold text-zinc-700 dark:text-zinc-300 text-sm mb-1">Sin encabezados</p>
                     <p class="font-sans text-xs text-zinc-400 dark:text-zinc-500 max-w-[210px] leading-relaxed">
@@ -72,7 +75,11 @@ export const OutlineView = {
 
         if (outlineBadge) {
             outlineBadge.textContent = String(headings.length);
-            outlineBadge.classList.remove('hidden');
+            if (this.activeTab === 'outline') {
+                outlineBadge.classList.remove('hidden');
+            } else {
+                outlineBadge.classList.add('hidden');
+            }
         }
 
         const itemsHtml = headings.map(h => {
@@ -106,7 +113,7 @@ export const OutlineView = {
     },
 
     /**
-     * Alterna entre las pestañas "sugerencias" y "estructura".
+     * Alterna entre las vistas "análisis" y "estructura" en el panel lateral.
      *
      * @param {'suggestions' | 'outline'} tabName
      */
@@ -114,8 +121,12 @@ export const OutlineView = {
         const {
             resultsPanel,
             outlinePanel,
-            tabSuggestionsBtn,
-            tabOutlineBtn
+            sidebarTitleIcon,
+            sidebarTitleText,
+            switchSidebarTabBtn,
+            switchSidebarTabIcon,
+            suggestionsBadge,
+            outlineBadge
         } = this.elements;
 
         this.activeTab = tabName;
@@ -124,24 +135,36 @@ export const OutlineView = {
             resultsPanel?.classList.add('hidden');
             outlinePanel?.classList.remove('hidden');
 
-            tabSuggestionsBtn?.setAttribute('aria-selected', 'false');
-            tabSuggestionsBtn?.classList.remove('shadow-xs', 'bg-white', 'dark:bg-zinc-800', 'text-primary', 'font-semibold');
-            tabSuggestionsBtn?.classList.add('text-zinc-500', 'hover:text-zinc-800', 'dark:text-zinc-400', 'dark:hover:text-zinc-200', 'font-medium');
+            if (sidebarTitleIcon) sidebarTitleIcon.textContent = 'list_arrow';
+            if (sidebarTitleText) sidebarTitleText.textContent = 'ESTRUCTURA';
 
-            tabOutlineBtn?.setAttribute('aria-selected', 'true');
-            tabOutlineBtn?.classList.remove('text-zinc-500', 'hover:text-zinc-800', 'dark:text-zinc-400', 'dark:hover:text-zinc-200', 'font-medium');
-            tabOutlineBtn?.classList.add('shadow-xs', 'bg-white', 'dark:bg-zinc-800', 'text-primary', 'font-semibold');
+            if (switchSidebarTabIcon) switchSidebarTabIcon.textContent = 'auto_awesome';
+            if (switchSidebarTabBtn) {
+                switchSidebarTabBtn.setAttribute('title', 'Ver análisis');
+                switchSidebarTabBtn.setAttribute('aria-label', 'Ver análisis');
+            }
+
+            suggestionsBadge?.classList.add('hidden');
+            if (outlineBadge && outlineBadge.textContent !== '0' && outlineBadge.textContent.trim() !== '') {
+                outlineBadge.classList.remove('hidden');
+            }
         } else {
             outlinePanel?.classList.add('hidden');
             resultsPanel?.classList.remove('hidden');
 
-            tabOutlineBtn?.setAttribute('aria-selected', 'false');
-            tabOutlineBtn?.classList.remove('shadow-xs', 'bg-white', 'dark:bg-zinc-800', 'text-primary', 'font-semibold');
-            tabOutlineBtn?.classList.add('text-zinc-500', 'hover:text-zinc-800', 'dark:text-zinc-400', 'dark:hover:text-zinc-200', 'font-medium');
+            if (sidebarTitleIcon) sidebarTitleIcon.textContent = 'auto_awesome';
+            if (sidebarTitleText) sidebarTitleText.textContent = 'ANÁLISIS';
 
-            tabSuggestionsBtn?.setAttribute('aria-selected', 'true');
-            tabSuggestionsBtn?.classList.remove('text-zinc-500', 'hover:text-zinc-800', 'dark:text-zinc-400', 'dark:hover:text-zinc-200', 'font-medium');
-            tabSuggestionsBtn?.classList.add('shadow-xs', 'bg-white', 'dark:bg-zinc-800', 'text-primary', 'font-semibold');
+            if (switchSidebarTabIcon) switchSidebarTabIcon.textContent = 'list_arrow';
+            if (switchSidebarTabBtn) {
+                switchSidebarTabBtn.setAttribute('title', 'Ver estructura (Ctrl+Shift+O)');
+                switchSidebarTabBtn.setAttribute('aria-label', 'Ver estructura');
+            }
+
+            outlineBadge?.classList.add('hidden');
+            if (suggestionsBadge && suggestionsBadge.textContent !== '0' && suggestionsBadge.textContent.trim() !== '') {
+                suggestionsBadge.classList.remove('hidden');
+            }
         }
     }
 };
