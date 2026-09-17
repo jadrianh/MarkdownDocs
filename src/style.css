@@ -45,29 +45,356 @@
   font-variation-settings: 'FILL' 1, 'wght' 400, 'GRAD' 0, 'opsz' 24 !important;
 }
 
-/*
- * Reemplaza la vieja ventana emergente de downloadPdf() (ver editor.service.js).
- * Patrón estándar: oculta todo por visibilidad, muestra solo #previewPanel,
- * y fuerza su display por si estaba oculto (clase `hidden` de Tailwind) porque
- * el usuario exportó a PDF sin haber cambiado a modo de vista previa.
- */
+/* ==========================================================================
+   Motor de Exportación a PDF Nativo (Text-based / Vector Print Engine)
+   ========================================================================== */
+@page {
+  size: A4;
+  margin: 15mm 15mm 15mm 15mm;
+
+  /* Supresión de encabezados y pies de página predeterminados (URL, título, fecha) */
+  @top-left-corner { content: ""; }
+  @top-left { content: ""; }
+  @top-center { content: ""; }
+  @top-right { content: ""; }
+  @top-right-corner { content: ""; }
+  @bottom-left-corner { content: ""; }
+  @bottom-left { content: ""; }
+  @bottom-center { content: ""; }
+  @bottom-right-corner { content: ""; }
+
+  /* Solo número de página a la derecha, con margen seguro sin pegarse al borde de la hoja */
+  @bottom-right {
+    content: counter(page);
+    font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", "Noto Sans", Helvetica, Arial, sans-serif;
+    font-size: 9pt;
+    font-weight: 500;
+    color: #6e7781;
+    vertical-align: middle;
+    text-align: right;
+    padding-right: 4mm;
+  }
+}
+
+/* En pantalla, el contenedor de impresión nativo permanece invisible sin ocupar espacio */
+#nativePrintRoot {
+  display: none !important;
+}
+
 @media print {
-  body * {
-    visibility: hidden;
+  /* 1. Ocultar deterministamente toda la UI de la aplicación sin alterar el árbol de estilos */
+  body > *:not(#nativePrintRoot) {
+    display: none !important;
   }
 
-  #previewPanel,
-  #previewPanel * {
-    visibility: visible;
+  /* 2. Forzar hoja en blanco pura para papel, aislando de modo Oscuro o Negro OLED */
+  html,
+  html.dark,
+  html.black-mode,
+  body,
+  html.dark body,
+  html.black-mode body {
+    background: #ffffff !important;
+    background-color: #ffffff !important;
+    color: #1f2328 !important;
+    height: auto !important;
+    min-height: 0 !important;
+    max-height: none !important;
+    overflow: visible !important;
+    position: static !important;
+    margin: 0 !important;
+    padding: 0 !important;
+    -webkit-print-color-adjust: exact !important;
+    print-color-adjust: exact !important;
   }
 
-  #previewPanel {
+  /* 3. Contenedor de impresión nativo: flujo tipográfico 100% vectorial */
+  #nativePrintRoot {
     display: block !important;
-    position: absolute;
-    inset: 0;
-    padding: 2rem;
-    background: #ffffff;
-    color: #18181b;
+    visibility: visible !important;
+    position: static !important;
+    width: 100% !important;
+    height: auto !important;
+    min-height: 0 !important;
+    max-height: none !important;
+    overflow: visible !important;
+    padding: 0 !important;
+    margin: 0 !important;
+    background: #ffffff !important;
+    background-color: #ffffff !important;
+    color: #1f2328 !important;
+    font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", "Noto Sans", Helvetica, Arial, sans-serif !important;
+    font-size: 10.5pt !important;
+    line-height: 1.6 !important;
+    user-select: text !important;
+    pointer-events: auto !important;
+  }
+
+  /* 4. Neutralizar filtros, animaciones y transformaciones que fuercen a Skia a rasterizar a imagen */
+  #nativePrintRoot,
+  #nativePrintRoot *,
+  #nativePrintRoot *::before,
+  #nativePrintRoot *::after {
+    animation: none !important;
+    transition: none !important;
+    transform: none !important;
+    filter: none !important;
+    backdrop-filter: none !important;
+    box-shadow: none !important;
+    text-shadow: none !important;
+    user-select: text !important;
+    pointer-events: auto !important;
+  }
+
+  /* 5. Hipervínculos nativos activos y seleccionables con URL limpia */
+  #nativePrintRoot a,
+  #nativePrintRoot a:visited {
+    color: #0969da !important;
+    text-decoration: underline !important;
+    text-underline-offset: 2px !important;
+    user-select: text !important;
+    pointer-events: auto !important;
+  }
+
+  #nativePrintRoot a::after {
+    content: none !important;
+  }
+
+  /* 6. Jerarquía tipográfica con control de saltos de página (Evita huérfanos) */
+  #nativePrintRoot h1,
+  #nativePrintRoot h2,
+  #nativePrintRoot h3,
+  #nativePrintRoot h4,
+  #nativePrintRoot h5,
+  #nativePrintRoot h6 {
+    color: #1f2328 !important;
+    font-weight: 600 !important;
+    margin-top: 1.4em !important;
+    margin-bottom: 0.5em !important;
+    break-after: avoid !important;
+    page-break-after: avoid !important;
+    break-inside: avoid !important;
+    page-break-inside: avoid !important;
+  }
+
+  #nativePrintRoot h1 {
+    font-size: 1.75em !important;
+    border-bottom: 1px solid #d0d7de !important;
+    padding-bottom: 0.3em !important;
+    margin-top: 0 !important;
+  }
+
+  #nativePrintRoot h2 {
+    font-size: 1.35em !important;
+    border-bottom: 1px solid #d0d7de !important;
+    padding-bottom: 0.3em !important;
+  }
+
+  #nativePrintRoot h3 { font-size: 1.15em !important; }
+  #nativePrintRoot h4 { font-size: 1em !important; }
+
+  #nativePrintRoot p {
+    margin: 0.8em 0 !important;
+    color: #1f2328 !important;
+    break-inside: auto !important;
+  }
+
+  #nativePrintRoot ul,
+  #nativePrintRoot ol {
+    padding-left: 2em !important;
+    margin: 0.8em 0 !important;
+  }
+
+  #nativePrintRoot li {
+    margin: 0.3em 0 !important;
+    color: #1f2328 !important;
+  }
+
+  /* 7. GFM: Listas de tareas (Checkboxes nativos) */
+  #nativePrintRoot .task-list-item {
+    list-style: none !important;
+    margin-left: -1.4em !important;
+  }
+
+  #nativePrintRoot .task-list-item input[type="checkbox"] {
+    appearance: auto !important;
+    -webkit-appearance: checkbox !important;
+    margin-right: 0.5rem !important;
+    vertical-align: middle !important;
+  }
+
+  /* 8. GFM: Tablas nativas vectoriales con cabeceras repetidas */
+  #nativePrintRoot table {
+    width: 100% !important;
+    border-collapse: collapse !important;
+    margin: 1.2em 0 !important;
+    font-size: 9.5pt !important;
+    break-inside: auto !important;
+    page-break-inside: auto !important;
+  }
+
+  #nativePrintRoot thead {
+    display: table-header-group !important;
+  }
+
+  #nativePrintRoot tr {
+    break-inside: avoid !important;
+    page-break-inside: avoid !important;
+  }
+
+  #nativePrintRoot th,
+  #nativePrintRoot td {
+    border: 1px solid #d0d7de !important;
+    padding: 7px 11px !important;
+    color: #1f2328 !important;
+  }
+
+  #nativePrintRoot th {
+    background-color: #f6f8fa !important;
+    font-weight: 600 !important;
+    text-align: left !important;
+  }
+
+  #nativePrintRoot tr:nth-child(even) {
+    background-color: #fcfcfc !important;
+  }
+
+  /* 9. GFM: Alertas y Citas GitHub (Primer Light) */
+  #nativePrintRoot .markdown-alert {
+    padding: 0.75rem 1rem !important;
+    margin: 1.2rem 0 !important;
+    border-left: 4px solid #0969da !important;
+    background-color: #f6f8fa !important;
+    border-radius: 0 6px 6px 0 !important;
+    break-inside: avoid !important;
+    page-break-inside: avoid !important;
+    color: #1f2328 !important;
+  }
+
+  #nativePrintRoot .markdown-alert-note { border-left-color: #0969da !important; background-color: #f0f6fc !important; }
+  #nativePrintRoot .markdown-alert-tip { border-left-color: #1a7f37 !important; background-color: #f0fdf4 !important; }
+  #nativePrintRoot .markdown-alert-important { border-left-color: #8250df !important; background-color: #faf5ff !important; }
+  #nativePrintRoot .markdown-alert-warning { border-left-color: #9a6700 !important; background-color: #fff8c5 !important; }
+  #nativePrintRoot .markdown-alert-caution { border-left-color: #cf222e !important; background-color: #ffebe9 !important; }
+
+  #nativePrintRoot .markdown-alert-title {
+    font-weight: 600 !important;
+    display: flex !important;
+    align-items: center !important;
+    gap: 0.5rem !important;
+    margin-bottom: 0.35rem !important;
+    font-size: 9pt !important;
+  }
+
+  #nativePrintRoot .markdown-alert-note .markdown-alert-title { color: #0969da !important; }
+  #nativePrintRoot .markdown-alert-tip .markdown-alert-title { color: #1a7f37 !important; }
+  #nativePrintRoot .markdown-alert-important .markdown-alert-title { color: #8250df !important; }
+  #nativePrintRoot .markdown-alert-warning .markdown-alert-title { color: #9a6700 !important; }
+  #nativePrintRoot .markdown-alert-caution .markdown-alert-title { color: #cf222e !important; }
+
+  #nativePrintRoot .octicon {
+    display: inline-block !important;
+    vertical-align: middle !important;
+    fill: currentColor !important;
+  }
+
+  #nativePrintRoot blockquote {
+    margin: 1.2rem 0 !important;
+    padding: 0.5rem 1rem !important;
+    border-left: 4px solid #d0d7de !important;
+    background-color: #f6f8fa !important;
+    color: #57606a !important;
+    break-inside: avoid !important;
+    page-break-inside: avoid !important;
+  }
+
+  /* 10. Código preformateado y resaltado de sintaxis con fondo claro */
+  #nativePrintRoot pre,
+  #nativePrintRoot pre[class*="language-"] {
+    background-color: #f6f8fa !important;
+    color: #1f2328 !important;
+    border: 1px solid #d0d7de !important;
+    border-radius: 6px !important;
+    padding: 12px 16px !important;
+    font-family: "JetBrains Mono", Consolas, Menlo, monospace !important;
+    font-size: 9pt !important;
+    line-height: 1.45 !important;
+    white-space: pre-wrap !important;
+    word-break: break-word !important;
+    break-inside: avoid !important;
+    page-break-inside: avoid !important;
+  }
+
+  #nativePrintRoot code,
+  #nativePrintRoot code[class*="language-"] {
+    color: #1f2328 !important;
+    font-family: "JetBrains Mono", Consolas, Menlo, monospace !important;
+  }
+
+  #nativePrintRoot :not(pre) > code {
+    background-color: #eff1f3 !important;
+    padding: 0.2em 0.4em !important;
+    border-radius: 4px !important;
+    font-size: 85% !important;
+    border: 1px solid #e1e4e8 !important;
+  }
+
+  /* Syntax Highlighting Light Tokens */
+  #nativePrintRoot .token.comment,
+  #nativePrintRoot .token.prolog,
+  #nativePrintRoot .token.doctype,
+  #nativePrintRoot .token.cdata { color: #6e7781 !important; }
+  #nativePrintRoot .token.punctuation { color: #24292f !important; }
+  #nativePrintRoot .token.property,
+  #nativePrintRoot .token.tag,
+  #nativePrintRoot .token.boolean,
+  #nativePrintRoot .token.number,
+  #nativePrintRoot .token.constant { color: #0550ae !important; }
+  #nativePrintRoot .token.selector,
+  #nativePrintRoot .token.attr-name,
+  #nativePrintRoot .token.string,
+  #nativePrintRoot .token.char,
+  #nativePrintRoot .token.builtin { color: #0a3069 !important; }
+  #nativePrintRoot .token.operator,
+  #nativePrintRoot .token.entity,
+  #nativePrintRoot .token.url,
+  #nativePrintRoot .token.keyword { color: #cf222e !important; }
+  #nativePrintRoot .token.function,
+  #nativePrintRoot .token.class-name { color: #8250df !important; }
+  #nativePrintRoot .token.regex,
+  #nativePrintRoot .token.variable { color: #953800 !important; }
+
+  /* 11. Dialecto Académico / LaTeX: Supresión de MathML fantasma y preservación vectorial KaTeX */
+  #nativePrintRoot .katex-mathml {
+    display: none !important;
+  }
+
+  #nativePrintRoot .katex-html {
+    display: inline-block !important;
+    color: #1f2328 !important;
+  }
+
+  #nativePrintRoot .katex-display {
+    margin: 1.2em 0 !important;
+    break-inside: avoid !important;
+    page-break-inside: avoid !important;
+  }
+
+  /* 12. Notas al pie (Footnotes) */
+  #nativePrintRoot .footnotes {
+    margin-top: 2.5rem !important;
+    padding-top: 1rem !important;
+    border-top: 1px solid #d0d7de !important;
+    font-size: 8.5pt !important;
+    color: #57606a !important;
+    break-inside: avoid !important;
+    page-break-inside: avoid !important;
+  }
+
+  #nativePrintRoot .footnote-ref a {
+    color: #0969da !important;
+    font-weight: 600 !important;
+    text-decoration: none !important;
   }
 }
 
@@ -1109,11 +1436,18 @@ html.black-mode .footnotes {
   animation: fadeInFast 0.2s ease-out forwards;
 }
 
-@media (prefers-reduced-motion: reduce) {
-  .skeleton-shimmer::after {
-    animation: none;
-    display: none;
+@keyframes outlinePulse {
+  0% {
+    background-color: rgba(var(--primary-rgb), 0.28);
+    border-radius: 4px;
   }
+  100% {
+    background-color: transparent;
+  }
+}
+
+.outline-target-highlight {
+  animation: outlinePulse 1.6s ease-out forwards;
 }
 
 

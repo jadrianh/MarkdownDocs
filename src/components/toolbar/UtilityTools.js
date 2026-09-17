@@ -7,74 +7,6 @@
 export function renderUtilityTools() {
     return /* html */ `
       <div class="flex items-center gap-0.5 @[600px]:gap-1 text-xs font-mono shrink-0">
-        <!-- Markdown Flavor Selector Dropdown -->
-        <div class="relative dropdown-container hidden @[750px]:flex items-center">
-          <button
-            id="btnMarkdownFlavor"
-            aria-label="Seleccionar dialecto Markdown"
-            aria-haspopup="listbox"
-            aria-expanded="false"
-            class="dropdown-trigger flex items-center justify-center gap-1 px-1.5 h-8 hover:bg-zinc-200/60 dark:hover:bg-zinc-700 rounded-sm transition-colors text-zinc-600 dark:text-zinc-300 font-mono text-xs"
-            title="Dialecto Markdown: GitHub (GFM)"
-          >
-            <span id="currentFlavorIcon" class="material-symbols-outlined text-[18px]">terminal</span>
-            <span
-              id="currentFlavorText"
-              class="font-semibold text-xs tracking-wide"
-              >GFM</span
-            >
-            <span
-              class="material-symbols-outlined text-[18px] text-zinc-400 -ml-0.5"
-              >arrow_drop_down</span
-            >
-          </button>
-          <div
-            id="menuMarkdownFlavor"
-            role="listbox"
-            aria-label="Dialecto Markdown"
-            class="dropdown-menu hidden absolute top-full right-0 mt-1 z-50 w-56 bg-white dark:bg-zinc-800 border border-zinc-200/80 dark:border-zinc-700/80 rounded shadow-xl py-1 font-mono text-xs text-zinc-700 dark:text-zinc-200"
-          >
-            <button
-              role="option"
-              aria-selected="true"
-              class="dropdown-flavor-item w-full flex items-center justify-between px-3 py-1.5 hover:bg-zinc-100 dark:hover:bg-zinc-700/60 transition-colors text-left"
-              data-flavor="gfm"
-            >
-              <span class="flex items-center gap-2">
-                <span class="material-symbols-outlined text-[18px] text-zinc-500 dark:text-zinc-400">terminal</span>
-                GitHub (GFM)
-              </span>
-              <span class="flavor-check material-symbols-outlined text-[16px] text-primary">check</span>
-            </button>
-            <button
-              role="option"
-              aria-selected="false"
-              class="dropdown-flavor-item w-full flex items-center justify-between px-3 py-1.5 hover:bg-zinc-100 dark:hover:bg-zinc-700/60 transition-colors text-left"
-              data-flavor="academic"
-            >
-              <span class="flex items-center gap-2">
-                <span class="material-symbols-outlined text-[18px] text-zinc-500 dark:text-zinc-400">functions</span>
-                Académico (LaTeX)
-              </span>
-              <span class="flavor-check material-symbols-outlined text-[16px] text-primary opacity-0">check</span>
-            </button>
-            <button
-              role="option"
-              aria-selected="false"
-              class="dropdown-flavor-item w-full flex items-center justify-between px-3 py-1.5 hover:bg-zinc-100 dark:hover:bg-zinc-700/60 transition-colors text-left"
-              data-flavor="commonmark"
-            >
-              <span class="flex items-center gap-2">
-                <span class="material-symbols-outlined text-[18px] text-zinc-500 dark:text-zinc-400">check_circle</span>
-                CommonMark
-              </span>
-              <span class="flavor-check material-symbols-outlined text-[16px] text-primary opacity-0">check</span>
-            </button>
-          </div>
-        </div>
-
-        <div class="w-px h-4 bg-zinc-200 dark:bg-zinc-700 mx-0.5 hidden @[750px]:block"></div>
-
         <!-- Language Selector Dropdown -->
         <div class="relative dropdown-container flex items-center">
           <button
@@ -423,12 +355,12 @@ export function renderUtilityTools() {
           >
         </button>
 
-        <!-- Botón para alternar/colapsar panel de sugerencias -->
+        <!-- Botón para alternar/colapsar panel lateral -->
         <button
           id="toggleSidebarBtn"
-          aria-label="Alternar panel de sugerencias"
+          aria-label="Alternar panel lateral"
           class="flex items-center justify-center w-8 h-8 hover:bg-zinc-200/60 dark:hover:bg-zinc-700 rounded-sm transition-colors text-zinc-600 dark:text-zinc-300"
-          title="Alternar panel de sugerencias"
+          title="Alternar panel lateral"
         >
           <span
             id="toggleSidebarIcon"
@@ -439,8 +371,17 @@ export function renderUtilityTools() {
 
         <div class="w-px h-4 bg-zinc-200 dark:bg-zinc-700 mx-0.5 hidden @[600px]:block"></div>
 
-        <!-- History & Clipboard (visible en contenedores anchos >= 600px) -->
+        <!-- History, Search & Clipboard (visible en contenedores anchos >= 600px) -->
         <div class="hidden @[600px]:flex items-center gap-0.5">
+          <button
+            id="findReplaceBtn"
+            type="button"
+            aria-label="Buscar y reemplazar"
+            class="flex items-center justify-center w-8 h-8 hover:bg-zinc-200/60 dark:hover:bg-zinc-700 rounded-sm transition-colors text-zinc-600 dark:text-zinc-300"
+            title="Buscar y reemplazar (Ctrl+F)"
+          >
+            <span class="material-symbols-outlined text-[20px]">search</span>
+          </button>
           <button
             id="undoBtn"
             aria-label="Deshacer"
@@ -458,6 +399,14 @@ export function renderUtilityTools() {
             <span class="material-symbols-outlined text-[20px]">redo</span>
           </button>
           <button
+            id="formatDocBtn"
+            aria-label="Auto-formatear documento"
+            class="flex items-center justify-center w-8 h-8 hover:bg-zinc-200/60 dark:hover:bg-zinc-700 rounded-sm transition-colors text-zinc-600 dark:text-zinc-300"
+            title="Auto-formatear documento (Tab / Shift+Alt+F)"
+          >
+            <span class="material-symbols-outlined text-[20px]">auto_fix_high</span>
+          </button>
+          <button
             id="copyBtn"
             aria-label="Copiar"
             class="flex items-center justify-center w-8 h-8 hover:bg-zinc-200/60 dark:hover:bg-zinc-700 rounded-sm transition-colors text-zinc-600 dark:text-zinc-300"
@@ -467,6 +416,7 @@ export function renderUtilityTools() {
               >content_copy</span
             >
           </button>
+          <div class="w-px h-4 bg-zinc-200 dark:bg-zinc-700 mx-0.5 shrink-0"></div>
           <button
             id="clearBtn"
             aria-label="Borrar"
@@ -501,6 +451,18 @@ export function renderUtilityTools() {
             <button
               role="menuitem"
               class="dropdown-item w-full flex items-center justify-between px-3 py-1.5 hover:bg-zinc-100 dark:hover:bg-zinc-700/60 transition-colors text-left"
+              data-action="findReplace"
+            >
+              <span class="flex items-center gap-2">
+                <span class="material-symbols-outlined text-[20px]">search</span>
+                Buscar y reemplazar
+              </span>
+              <span class="text-[10px] text-zinc-500 dark:text-zinc-400 font-mono">Ctrl+F</span>
+            </button>
+            <div class="my-1 border-t border-zinc-200/60 dark:border-zinc-700/60"></div>
+            <button
+              role="menuitem"
+              class="dropdown-item w-full flex items-center justify-between px-3 py-1.5 hover:bg-zinc-100 dark:hover:bg-zinc-700/60 transition-colors text-left"
               data-action="undo"
             >
               <span class="flex items-center gap-2">
@@ -520,6 +482,17 @@ export function renderUtilityTools() {
               </span>
               <span class="text-[10px] text-zinc-500 dark:text-zinc-400 font-mono">Ctrl+Y</span>
             </button>
+            <button
+              role="menuitem"
+              class="dropdown-item w-full flex items-center justify-between px-3 py-1.5 hover:bg-zinc-100 dark:hover:bg-zinc-700/60 transition-colors text-left text-primary font-medium"
+              data-action="format"
+            >
+              <span class="flex items-center gap-2">
+                <span class="material-symbols-outlined text-[20px]">auto_fix_high</span>
+                Auto-formatear
+              </span>
+              <span class="text-[10px] text-zinc-500 dark:text-zinc-400 font-mono">Tab</span>
+            </button>
             <div class="my-1 border-t border-zinc-200/60 dark:border-zinc-700/60"></div>
             <button
               role="menuitem"
@@ -531,6 +504,9 @@ export function renderUtilityTools() {
                 Copiar texto
               </span>
             </button>
+
+            <div class="w-px h-4 bg-zinc-200 dark:bg-zinc-700 mx-0.5 hidden @[600px]:block"></div>
+
             <button
               role="menuitem"
               class="dropdown-item w-full flex items-center justify-between px-3 py-1.5 hover:bg-zinc-100 dark:hover:bg-zinc-700/60 transition-colors text-left text-red-500/80 dark:text-red-400"

@@ -193,6 +193,26 @@ export function renderFormattingTools() {
             ></div>
             <button
               role="menuitem"
+              class="dropdown-item w-full flex items-center justify-between px-3 py-1.5 hover:bg-zinc-100 dark:hover:bg-zinc-700/60 transition-colors text-left text-primary font-medium"
+              data-action="moreFormat"
+              data-value="format"
+            >
+              <span class="flex items-center gap-2">
+                <span class="material-symbols-outlined text-[18px]"
+                  >auto_fix_high</span
+                >
+                Auto-formatear
+              </span>
+              <span
+                class="text-[10px] text-zinc-500 dark:text-zinc-400 font-mono"
+                >Tab</span
+              >
+            </button>
+            <div
+              class="my-1 border-t border-zinc-200/60 dark:border-zinc-700/60"
+            ></div>
+            <button
+              role="menuitem"
               class="dropdown-item w-full flex items-center justify-between px-3 py-1.5 hover:bg-zinc-100 dark:hover:bg-zinc-700/60 transition-colors text-left text-red-500/80 dark:text-red-400"
               data-action="moreFormat"
               data-value="clear"

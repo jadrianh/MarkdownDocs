@@ -178,4 +178,32 @@ describe('EditorService & State', () => {
         expect(state.viewMode).toBe('editor');
         expect(state.isPreviewMode).toBe(false);
     });
+
+    it('handles downloadPdf using #nativePrintRoot and window.print()', async () => {
+        let printCalled = false;
+        window.print = () => {
+            printCalled = true;
+            const root = document.getElementById('nativePrintRoot');
+            expect(root).toBeTruthy();
+            expect(root.innerHTML).toContain('Mi Titulo de Documento');
+        };
+
+        const title = await EditorService.downloadPdf('# Mi Titulo de Documento\n\nContenido de prueba.');
+        expect(title).toBe('Mi Titulo de Documento');
+        expect(printCalled).toBe(true);
+
+        // After print, printRoot should be emptied
+        const root = document.getElementById('nativePrintRoot');
+        expect(root.innerHTML).toBe('');
+    });
+
+    it('formats markdown documents via formatMarkdown()', () => {
+        const input = '#Titulo\n\n- item 1\n* item 2\n\n| A | B |\n|---|---|\n| 1 | 2 |\n';
+        const formatted = EditorService.formatMarkdown(input);
+        expect(formatted).toContain('# Titulo');
+        expect(formatted).toContain('- item 1\n- item 2');
+        expect(formatted).toContain('| A   | B   |');
+    });
 });
+
+

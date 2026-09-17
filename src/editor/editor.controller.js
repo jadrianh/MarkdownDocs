@@ -5,6 +5,8 @@ import { closeAllDropdowns, toggleDropdown, setupDropdownKeyboardNav } from '../
 import { clearGrammarMatches } from '../api/grammar/grammar.controller.js';
 import { ToastView } from '../ui/toast.view.js';
 import { StorageService } from '../core/storage.service.js';
+import { openFindReplace, closeFindReplace, isFindReplaceOpen } from './find-replace/findReplace.controller.js';
+import { toggleOutlineTab } from './outline/outline.controller.js';
 
 export function persistDraft() {
     const editor = EditorView.elements.editor;
@@ -85,6 +87,40 @@ export function initEditorController() {
         const isShift = e.shiftKey;
         const key = e.key ? e.key.toLowerCase() : '';
 
+        // Auto-formatear documento (TAB o Shift+Alt+F o Ctrl+Alt+F)
+        if (e.key === 'Tab' && !isCtrlOrCmd && !isAlt && !isShift) {
+            e.preventDefault();
+            formatDocumentAction();
+            return;
+        }
+        if (isAlt && isShift && !isCtrlOrCmd && (key === 'f' || e.code === 'KeyF')) {
+            e.preventDefault();
+            formatDocumentAction();
+            return;
+        }
+        if (isCtrlOrCmd && isAlt && !isShift && (key === 'f' || e.code === 'KeyF')) {
+            e.preventDefault();
+            formatDocumentAction();
+            return;
+        }
+
+        // Buscar (Ctrl+F) y Reemplazar (Ctrl+H)
+        if (isCtrlOrCmd && !isAlt && !isShift && (key === 'f' || e.code === 'KeyF')) {
+            e.preventDefault();
+            openFindReplace('find');
+            return;
+        }
+        if (isCtrlOrCmd && !isAlt && !isShift && (key === 'h' || e.code === 'KeyH')) {
+            e.preventDefault();
+            openFindReplace('replace');
+            return;
+        }
+        if (e.key === 'Escape' && isFindReplaceOpen()) {
+            e.preventDefault();
+            closeFindReplace();
+            return;
+        }
+
         // Deshacer (Ctrl+Z) y Rehacer (Ctrl+Shift+Z)
         if (isCtrlOrCmd && !isAlt && !isShift && key === 'z') { e.preventDefault(); performUndo(); return; }
         if (isCtrlOrCmd && !isAlt && isShift && key === 'z') { e.preventDefault(); performRedo(); return; }
@@ -139,6 +175,7 @@ export function initEditorController() {
         const isShift = e.shiftKey;
         const key = e.key ? e.key.toLowerCase() : '';
 
+        // Atajos globales de modo de visualización
         if (isCtrlOrCmd && isAlt && !isShift) {
             if (key === 'e') { e.preventDefault(); EditorView.setViewMode('editor'); return; }
             if (key === 's') { e.preventDefault(); EditorView.toggleSplitMode(); return; }
@@ -149,6 +186,23 @@ export function initEditorController() {
                 }
                 return;
             }
+        }
+
+        // Atajos globales de búsqueda y reemplazo
+        if (isCtrlOrCmd && !isAlt && !isShift && (key === 'f' || e.code === 'KeyF')) {
+            e.preventDefault();
+            openFindReplace('find');
+            return;
+        }
+        if (isCtrlOrCmd && !isAlt && !isShift && (key === 'h' || e.code === 'KeyH')) {
+            e.preventDefault();
+            openFindReplace('replace');
+            return;
+        }
+        if (e.key === 'Escape' && isFindReplaceOpen()) {
+            e.preventDefault();
+            closeFindReplace();
+            return;
         }
     });
 
@@ -191,6 +245,9 @@ export function initEditorController() {
             else if (action === 'insertElement') insertElementAction(value);
             else if (action === 'undo') performUndo();
             else if (action === 'redo') performRedo();
+            else if (action === 'format') formatDocumentAction();
+            else if (action === 'findReplace') openFindReplace('find');
+            else if (action === 'outline') toggleOutlineTab();
             else if (action === 'copy') copyText();
             else if (action === 'clear') clearEditor();
 
@@ -219,6 +276,7 @@ export function initEditorController() {
     document.getElementById('downloadPdfBtn')?.addEventListener('click', downloadPdfFile);
     document.getElementById('undoBtn')?.addEventListener('click', performUndo);
     document.getElementById('redoBtn')?.addEventListener('click', performRedo);
+    document.getElementById('formatDocBtn')?.addEventListener('click', formatDocumentAction);
     document.getElementById('copyBtn')?.addEventListener('click', copyText);
     document.getElementById('clearBtn')?.addEventListener('click', clearEditor);
 }
@@ -273,7 +331,7 @@ async function downloadMarkdownFile() {
     }
 }
 
-function downloadPdfFile() {
+async function downloadPdfFile() {
     const { editor } = EditorView.elements;
     const content = editor.value;
 
@@ -286,7 +344,7 @@ function downloadPdfFile() {
     // garantizando que el DOM esté listo antes de que el navegador abra el diálogo de impresión.
     EditorView.updatePreview(true);
 
-    const title = EditorService.downloadPdf(content);
+    const title = await EditorService.downloadPdf(content);
     ToastView.show(`Abriendo diálogo de impresión (${title})`, "success");
 }
 
@@ -304,8 +362,46 @@ function moreFormatAction(type) {
         EditorService.toggleStyle(editor, '`', '`');
     } else if (type === 'clear') {
         EditorService.clearFormatting(editor);
+    } else if (type === 'format') {
+        formatDocumentAction();
+        return;
     }
     dispatchEditorChange();
+}
+
+function formatDocumentAction() {
+    const { editor } = EditorView.elements;
+    const content = editor.value;
+
+    if (!content || !content.trim()) {
+        ToastView.show("El editor está vacío", "info");
+        return;
+    }
+
+    const formatted = EditorService.formatMarkdown(content);
+
+    if (formatted === content) {
+        ToastView.show("El documento ya tiene el formato correcto", "info");
+        return;
+    }
+
+    // Registrar estado anterior en la pila de deshacer (Ctrl+Z)
+    state.history.push(content);
+
+    const prevSelectionStart = editor.selectionStart;
+
+    editor.value = formatted;
+
+    // Reposicionar el cursor de forma segura dentro del texto formateado
+    const newCursor = Math.min(prevSelectionStart, formatted.length);
+    editor.selectionStart = editor.selectionEnd = newCursor;
+
+    // Registrar nuevo estado en historial y persistir en almacenamiento local
+    state.history.push(formatted);
+    persistDraft();
+    dispatchEditorChange();
+
+    ToastView.show("Documento auto-formateado", "success");
 }
 
 function listStyleAction(type) {

@@ -5,6 +5,8 @@ import { GrammarView } from '../api/grammar/grammar.view.js';
 import { initEditorController } from '../editor/editor.controller.js';
 import { initGrammarController } from '../api/grammar/grammar.controller.js';
 import { initParserController } from '../editor/parsers/parser.controller.js';
+import { initOutlineController } from '../editor/outline/outline.controller.js';
+import { initFindReplaceController } from '../editor/find-replace/findReplace.controller.js';
 import { StorageService } from './storage.service.js';
 import { ToastView } from '../ui/toast.view.js';
 
@@ -69,4 +71,6 @@ document.addEventListener('DOMContentLoaded', () => {
     initEditorController();
     initGrammarController();
     initParserController();
+    initOutlineController();
+    initFindReplaceController();
 });

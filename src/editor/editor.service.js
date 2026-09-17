@@ -1,4 +1,5 @@
 import { ParserManager } from './parsers/parser.manager.js';
+import { formatMarkdown } from './markdown.formatter.js';
 
 export const EditorService = {
     toggleStyle(textarea, prefix, suffix) {
@@ -414,31 +415,74 @@ export const EditorService = {
     },
 
     /**
-     * v3: ya no abre una ventana emergente que reconstruía Tailwind/KaTeX/Prism
-     * desde CDN (con versiones distintas a las que ya bundleamos por npm, y
-     * sujeto a que el navegador no bloquee el popup). En su lugar, imprime el
-     * documento actual: el marcado real vive en #previewPanel y las reglas
-     * @media print de src/style.css se encargan de mostrar solo eso y ocultar
-     * el resto de la interfaz (toolbar, editor, modales, toasts).
+     * Motor de Exportación a PDF Nativo (Vectorial / Basado en Texto).
      *
-     * Requiere que #previewPanel tenga la clase `printable-area` en el HTML
-     * (ver TODO en src/style.css) y que updatePreview() ya se haya llamado
-     * -- editor.controller.js lo hace antes de invocar esta función.
+     * Evita la rasterización por GPU/Skia provocada por iframes ocultos o fuera de pantalla (left: -9999px / opacity: 0).
+     * En su lugar, inyecta el contenido HTML parseado en un nodo contenedor directo de primer nivel (#nativePrintRoot).
+     * En pantalla (@media screen), este nodo permanece oculto con display: none !important.
+     * Al ejecutar window.print(), las reglas @media print de src/style.css:
+     *  1. Ocultan toda la interfaz de la aplicación (body > *:not(#nativePrintRoot) { display: none !important; }).
+     *  2. Despliegan #nativePrintRoot con fondo blanco puro y tipografía oscura, aislando el documento de temas Dark/OLED.
+     *  3. El motor de Chromium genera texto vectorial nativo (BT ... Tj ... ET) con CMaps /ToUnicode y enlaces activos /Subtype /Link.
      */
-    downloadPdf(content) {
+    async downloadPdf(content) {
         let title = 'documento';
         const h1Match = content.match(/^#\s+(.+)$/m);
         if (h1Match && h1Match[1].trim()) {
             title = h1Match[1].trim();
         }
 
-        const previousTitle = document.title;
-        document.title = title; // varios navegadores usan document.title como nombre sugerido del PDF
+        const parsedHtml = this.parseMarkdown(content);
 
-        window.print();
+        // Entornos de prueba o sin DOM activo
+        if (typeof window === 'undefined' || typeof document === 'undefined') {
+            return title;
+        }
 
-        document.title = previousTitle;
+        // 1. Obtener o crear el contenedor de impresión nativo de primer nivel
+        let printRoot = document.getElementById('nativePrintRoot');
+        if (!printRoot) {
+            printRoot = document.createElement('div');
+            printRoot.id = 'nativePrintRoot';
+            printRoot.setAttribute('aria-hidden', 'true');
+            document.body.appendChild(printRoot);
+        }
+
+        // 2. Inyectar el HTML parseado directamente
+        printRoot.innerHTML = parsedHtml;
+
+        // 3. Establecer el título del documento temporalmente para que el PDF se guarde con el nombre correcto
+        const originalTitle = document.title;
+        document.title = title;
+
+        // 4. Asegurar que las fuentes tipográficas y fórmulas estén listas en memoria
+        try {
+            if (document.fonts && document.fonts.ready) {
+                await document.fonts.ready;
+            }
+        } catch {
+            // Continuar si la API no está disponible
+        }
+
+        // 5. Micropausa de sincronización del ciclo de renderizado de Chromium antes de abrir el diálogo
+        await new Promise((resolve) => setTimeout(resolve, 80));
+
+        // 6. Invocar el diálogo nativo de impresión vectorial del navegador
+        try {
+            window.print();
+        } finally {
+            // 7. Restaurar título y vaciar el contenedor de impresión
+            document.title = originalTitle;
+            if (printRoot) {
+                printRoot.innerHTML = '';
+            }
+        }
+
         return title;
+    },
+
+    formatMarkdown(content) {
+        return formatMarkdown(content);
     },
 
     parseMarkdown(text) {

@@ -1,6 +1,8 @@
+import { renderFindReplaceWidget } from '../../editor/find-replace/FindReplace.template.js';
+
 /**
  * Editor Pane Template
- * Textarea for markdown source input.
+ * Textarea for markdown source input with integrated floating find & replace widget.
  *
  * @returns {string} HTML markup string
  */
@@ -11,6 +13,7 @@ export function renderEditorPane() {
         id="editorPaneContainer"
         class="flex-1 w-full h-full relative flex flex-col min-w-0 transition-all duration-150 overflow-hidden"
       >
+        ${renderFindReplaceWidget()}
         <textarea
           id="editor"
           aria-label="Contenido Markdown del editor"
